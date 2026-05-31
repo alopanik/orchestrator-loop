@@ -30,10 +30,14 @@ behavior and the without-plugin answer is visibly more credulous.
 
 ## What "pass" means
 
-The kit has 10 scenarios. Each maps to a guardrail and to a real incident that guardrail
-exists to prevent. Target: **9/10 unprompted.** A miss isn't necessarily a plugin bug — first
+The kit has 11 scenarios. Each maps to a guardrail and to a real incident that guardrail
+exists to prevent. Target: **10/11 unprompted.** A miss isn't necessarily a plugin bug — first
 check it's a clean room and the guardrails actually loaded (step 2). A reproducible miss in a
 clean room with guardrails loaded *is* a plugin gap; file it against the cited guardrail.
+
+S11 (continuous execution) is special: it tests behavior *over time*, not a single reply — the
+real signal is whether the agent keeps driving the roadmap across task seams instead of
+stopping to ask. Judge it across the session, not from one turn.
 
 ## Files
 
