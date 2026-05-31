@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "orchestrator-loop",
+  "owner": {
+    "name": "Andrew Lopanik",
+    "url": "https://github.com/alopanik"
+  },
+  "metadata": {
+    "description": "Distribution marketplace for the orchestrator-loop plugin.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "orchestrator-loop",
+      "source": ".",
+      "description": "Reusable agentic-engineering framework: the rules->roadmap->PRD->handoff->verify loop plus its guardrails, app-agnostic. Bring your own app-profile + connectors.",
+      "version": "0.1.0",
+      "tags": ["orchestration", "prd", "roadmap", "qa", "guardrails"]
+    }
+  ]
+}
