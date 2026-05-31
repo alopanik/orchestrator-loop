@@ -10,6 +10,9 @@ description: >
 
 The executor (`~~executor`) writes the code; you do not. The handoff is a self-contained brief.
 
+> **Full anatomy + a worked brief:** `references/methodology.md`. The quality of what comes
+> back is set here — a weak handoff produces a weak diff and a verification full of surprises.
+
 ## Rules
 
 - **Self-contained.** The executor must build from the brief alone. If `~~executor` can read

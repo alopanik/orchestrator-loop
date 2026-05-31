@@ -9,7 +9,26 @@ description: >
 # Verify the handback
 
 This is role 2 (QA). The executor's "done" is a claim. Re-establish every claim yourself,
-against reality.
+against reality — as an adversary trying to break the claim, not a co-author hoping it worked.
+
+> **Full forensic method + a worked verification:** `references/methodology.md`. The checklist
+> below is the floor; the method is an investigation — reproduce the exact number, read the
+> deployed path, distrust any too-good instrument, and gate per partition.
+
+## Be forensic (the floor is a checklist; the method is an investigation)
+
+- **Reproduce the exact number** yourself — re-run the query/test and get the same figure.
+  Report *your* number ("verified X via `<query>`"), never "the executor reports X."
+- **Read the path that runs in production** — the deployed bundle / live function, not just
+  the source. A "fixed" function nothing calls, or a DB change the frontend never deployed
+  for, is not a fix.
+- **Distrust any too-good instrument.** An impossible reading (a metric beating its ceiling, a
+  should-net-zero canary strongly positive) means the instrument reads a contaminated/leaked
+  source — fix or quarantine it; don't report its number.
+- **Trace performance to its mechanism** (read the query plan) before accepting a "fix";
+  raising a timeout is a symptom-patch.
+- **Verify plumbing claims directly** — query the scheduler/catalog for the exact job/
+  function/column/policy; "deployed" is not "exists."
 
 ## Three signals (all required for a UI-affecting change)
 
@@ -20,7 +39,16 @@ against reality.
 3. **The datastore reflects it.** Query `~~database` directly — row counts, values, and schema
    match what the PRD promised.
 
-DB-only verification is a failure mode; browser-only is too. Get all three.
+DB-only verification is a failure mode; browser-only is too. Get all three. **Read the
+actionable counter first** (the "today / pending / status" indicator) — a "today: 0" is the
+report, not the big KPI above it. If `~~browser-qa` is unavailable, say so and treat the
+verification as incomplete — never report ✓.
+
+**Two checks on every verification, even when the ticket is unrelated:** (1) **freshness** —
+a cheap "is the data current?" query catches a silently-frozen pipeline a feature-scoped
+review would miss (flag it P0); (2) **per-partition** the integrity gate for anything locally
+contaminable — a global average can pass while one partition is broken (aggregate hides
+local).
 
 ## Comprehensive, not feature-local
 

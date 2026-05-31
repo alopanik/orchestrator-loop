@@ -13,7 +13,8 @@ tool you actually use. Wire these up once when you install, in your app-profile.
 |---|---|---|
 | Executor (coding agent) | `~~executor` | Claude Code (headless / Desktop Commander), or another coding agent |
 | Version control | `~~vcs` | GitHub, GitLab, Bitbucket |
-| Database | `~~database` | Supabase, Postgres, PlanetScale, MySQL |
+| CI / build gate | `~~ci` | GitHub Actions, GitLab CI, CircleCI |
+| Database / datastore | `~~database` | Supabase, Postgres, PlanetScale, MySQL |
 | Hosting / deploy | `~~hosting` | Vercel, Netlify, Fly, Render |
 | DNS / edge | `~~dns` | Cloudflare, Route 53 |
 | Project tracker | `~~project-tracker` | Linear, Jira, Asana, GitHub Issues |
@@ -21,7 +22,9 @@ tool you actually use. Wire these up once when you install, in your app-profile.
 
 Not every category is required — only wire up the ones your app uses. At minimum the loop
 needs `~~executor` (to hand work to), `~~vcs` (to commit/track), and `~~browser-qa` (to
-validate UX). Database / hosting / DNS / project-tracker are wired as your stack needs them.
+validate UX). `~~ci` is what makes the constitution's invariants *enforced* rather than
+aspirational (the architect-review skill leans on it). Database / hosting / DNS /
+project-tracker are wired as your stack needs them.
 
 ## Where you declare your mappings
 

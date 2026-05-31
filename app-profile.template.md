@@ -20,6 +20,7 @@ Map each category from the plugin's `CONNECTORS.md` to the concrete tool you use
 ```
 ~~executor        = <e.g. Claude Code (headless, via Desktop Commander)>
 ~~vcs             = <e.g. GitHub — org/repo>
+~~ci              = <e.g. GitHub Actions — workflow that runs the migration lint + tests>
 ~~database        = <e.g. Supabase — project ref>
 ~~hosting         = <e.g. Vercel — team/project; what triggers deploys>
 ~~dns             = <e.g. Cloudflare — or none>
@@ -34,6 +35,19 @@ Map each category from the plugin's `CONNECTORS.md` to the concrete tool you use
 <Your invariants: config knobs and their allowed values, business rules, conventions, and the
 "things that look fine but aren't". This is the app-specific equivalent of the framework's
 guardrails — but it is YOURS, and the framework never assumes it.>
+
+## Sanity bounds / impossible values
+<The framework's core skepticism rule — "a surprising good result is a data bug until proven"
+— needs YOUR numbers to know what "surprising" means. Declare them here so the orchestrator
+can recognize a too-good-to-be-true result on sight:
+- The theoretical ceiling / plausible range for each key metric (e.g. "sustainable <metric>
+  is X–Y; above Y on N≥… is corruption first, signal second").
+- The "this should be ≈0 (or slightly negative)" canaries and the band they must stay in,
+  checked PER partition not just in aggregate.
+- Any value that is structurally impossible (a probability outside [0,1], an error score
+  below the random-chance floor, a both-sides payoff that nets positive).
+If you don't have these yet, the `draft-prd` and `verify-handback` skills will help you
+derive them from first principles.>
 
 ## Constitution / source of truth
 <Pointer to the doc that declares your canonical tables/modules/surfaces. The framework

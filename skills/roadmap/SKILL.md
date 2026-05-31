@@ -13,6 +13,12 @@ Turn a broad goal into an ordered set of PRD-sized units of work. This is role 3
 roadmap): requirements arrive broad; you drill in at high AND low level, do discovery, and
 produce a sequence the executor can chew through.
 
+> **Full method + worked example:** `references/methodology.md`. Read it the first few times
+> you run this skill; the spine below is the reminder.
+
+**Governing principle: plan against reality, not assumptions.** Decompose from the live
+system (query `~~database`, read the repo, run the thing) — never from imagination.
+
 ## Procedure
 
 1. **Anchor on the mission.** Restate the goal in one sentence and the success condition.
@@ -30,8 +36,10 @@ produce a sequence the executor can chew through.
 
 4. **Order by dependency and risk.** Lower number ships first — the number IS the
    execution order. Put foundational/plumbing work that everything else needs before the
-   features that depend on it. Put reversible/low-risk work before irreversible/high-risk.
-   Flag any unit that is gated on another (data migration, a deploy, an external job).
+   features that depend on it. **Put data-integrity and measurement work before anything that
+   consumes the numbers** — you cannot decide what to build next on top of numbers you
+   haven't proven are real. Put reversible/low-risk work before irreversible/high-risk. Flag
+   any unit that is gated on another (data migration, a deploy, an external job).
 
 5. **Write the roadmap as a table**, one row per PRD: `# | scope (one line) | depends-on |
    user-visible? | risk`. Keep it to outcomes, not implementation. Save it to the app's

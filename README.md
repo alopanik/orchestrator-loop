@@ -6,15 +6,31 @@ QAs the result — enforcing a fixed set of engineering guardrails the whole way
 app-agnostic: you bring your own app-profile, roadmap, and connectors.
 
 ## What's frozen in the plugin
-- **Guardrails** (always-on via a SessionStart hook — `GUARDRAILS.md`): build IN not ON TOP,
-  single source of truth, code minimization, idempotent writes, PRD discipline, and
-  never-trust-the-executor QA.
-- **The loop**, as five skills:
-  - `roadmap` — broad goal → sequenced, numbered PRD roadmap.
-  - `draft-prd` — the house PRD format (proof, root cause, scope, un-gameable acceptance).
-  - `architect-review` — the 5 questions that catch layering/forking before code is written.
+- **Guardrails** (always-on via a SessionStart hook — `GUARDRAILS.md`). Not just structural
+  rules (build IN not ON TOP, single source of truth + one write-path, idempotent/resumable
+  writes, make-failure-loud, PRD discipline) but the **epistemics** — how to think:
+  - *A surprising good result is a data bug until proven otherwise* — distrust it, reproduce
+    it, find the contamination before you celebrate.
+  - *Distrust the instrument, not just the result* — a monitor reading a leaked source lies
+    confidently.
+  - *Analytical rigor* — out-of-fold-only for ship decisions, multiple-comparisons/FDR
+    correction, no-band-aids (fix the model, never blend the failure away), no leakage.
+  - *Forensic verification* — reproduce the exact number, read the deployed path, gate per
+    partition, trace performance to its mechanism. Never-trust-the-executor QA.
+  - *Intellectual honesty* — surface the unwelcome truth, no selling, terminate in a
+    recommendation + next action.
+  - Each rule carries its **why** and a one-line **war story** — the reasoning is what tells
+    you how to apply it to a case the rule didn't anticipate.
+- **The loop**, as five skills (each with a `references/methodology.md` for the full method +
+  worked examples — progressive disclosure: the `SKILL.md` is the lean spine):
+  - `roadmap` — broad goal → sequenced, numbered PRD roadmap (integrity before consumption).
+  - `draft-prd` — the house PRD format (proof in numbers, root cause, scope, un-gameable
+    per-partition acceptance).
+  - `architect-review` — the 5 questions + constitution + CI guardrail that catch
+    layering/forking before code is written.
   - `handoff-to-executor` — package a PRD into a self-contained brief for your coding agent.
-  - `verify-handback` — independent QA: it renders + network green + datastore reflects it.
+  - `verify-handback` — independent forensic QA: reproduce the number, three signals
+    (renders + network green + datastore), per-partition, freshness.
 
 ## What you supply (per app)
 - An **app-profile** — copy `app-profile.template.md` into your repo as `CLAUDE.md` and fill in

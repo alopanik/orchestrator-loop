@@ -13,7 +13,7 @@
     {
       "name": "orchestrator-loop",
       "source": ".",
-      "description": "Reusable agentic-engineering framework: the rules->roadmap->PRD->handoff->verify loop plus its guardrails, app-agnostic. Bring your own app-profile + connectors.",
+      "description": "Reusable agentic-engineering framework: the rules->roadmap->PRD->handoff->verify loop plus its guardrails AND epistemics (skepticism, OOF+FDR rigor, forensic verification, honesty), app-agnostic. Bring your own app-profile + connectors.",
       "version": "0.1.0",
       "tags": ["orchestration", "prd", "roadmap", "qa", "guardrails"]
     }

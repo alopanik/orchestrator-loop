@@ -11,6 +11,10 @@ description: >
 Before any PRD is handed off, answer these five questions in the PRD's review section. A bad
 answer is a redesign, not a warning.
 
+> **Full method, the constitution + CI machinery, and worked catches:**
+> `references/methodology.md`. Systems rot one reasonable-looking addition at a time; these
+> questions are the ratchet against it.
+
 1. **Removal.** What is being REMOVED in this change? If nothing, why? A change that only
    adds — while touching an existing concept — is usually layering. Find what it replaces.
 
@@ -27,5 +31,9 @@ answer is a redesign, not a warning.
    architecture/constitution doc), or FORK it? If it forks, stop and redesign. Cite the
    constitution entry it touches.
 
-If a CI guardrail exists (a migration/structure linter), confirm this change would pass it.
-A failed review sends the PRD back to `draft-prd`, not forward to `handoff-to-executor`.
+Back the review with machinery so it sticks between reviews: a **constitution doc** (every
+store's one purpose / one write-path / readers — *if it isn't in the doc, it doesn't exist*)
+and a **`~~ci` guardrail** that fails the build on banned patterns (a `_v2`-style store, a
+fork view, a store not in the constitution), scoped to the PR diff. Confirm this change would
+pass it. A failed review sends the PRD back to `draft-prd`, not forward to
+`handoff-to-executor`.
