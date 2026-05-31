@@ -62,3 +62,17 @@ Then copy `app-profile.template.md` into your repo as `CLAUDE.md` and fill it in
 decomposes it into a numbered roadmap, drafts each PRD, architect-reviews it, hands it to your
 coding agent, then independently verifies the result against your database and your live UI —
 and only then accepts it. The executor writes the code; the orchestrator guarantees it's right.
+
+## Test it before you trust it
+Don't take the framing on faith — the plugin ships with a behavioral test kit in `test/`. It's
+a clean-room sample app-profile plus ten scenarios drawn from real incidents (a too-good A/B
+result, a dashboard reading a leaked source, a corpus average hiding a broken slice, a
+DROP-before-deploy, …) and a pass/fail rubric.
+
+The one rule that makes the test valid: **run it in a clean room** — a fresh session in a
+folder with nothing but this plugin and the sample app-profile. If you run it inside a project
+whose memory or `CLAUDE.md` already carries these rules, you can't tell whether the plugin or
+the ambient context produced the good behavior (isolate the variable — that's one of the
+plugin's own lessons). For a stronger signal, run each scenario once with the plugin and once
+in a vanilla session without it; the plugin passes if the with-plugin answer hits the target
+behavior and the without-plugin answer is visibly more credulous. See `test/README.md`.
