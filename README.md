@@ -8,7 +8,9 @@ app-agnostic: you bring your own app-profile, roadmap, and connectors.
 ## What's frozen in the plugin
 - **Guardrails** (always-on via a SessionStart hook — `GUARDRAILS.md`). Not just structural
   rules (build IN not ON TOP, single source of truth + one write-path, idempotent/resumable
-  writes, make-failure-loud, PRD discipline) but the **epistemics** — how to think:
+  writes, make-failure-loud, PRD discipline) and a **continuous-execution autonomy contract**
+  (keep driving the roadmap until the owner stops you, a genuine blocker, or done — no
+  "want me to continue?"), but the **epistemics** — how to think:
   - *A surprising good result is a data bug until proven otherwise* — distrust it, reproduce
     it, find the contamination before you celebrate.
   - *Distrust the instrument, not just the result* — a monitor reading a leaked source lies

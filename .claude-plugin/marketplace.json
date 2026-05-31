@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "Distribution marketplace for the orchestrator-loop plugin.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "orchestrator-loop",
       "source": ".",
       "description": "Reusable agentic-engineering framework: the rules->roadmap->PRD->handoff->verify loop plus its guardrails AND epistemics (skepticism, OOF+FDR rigor, forensic verification, honesty), app-agnostic. Bring your own app-profile + connectors.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "tags": ["orchestration", "prd", "roadmap", "qa", "guardrails"]
     }
   ]
