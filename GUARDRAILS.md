@@ -55,6 +55,10 @@ holds the full method and worked examples. (First time in a project? The `setup`
 guided onboarding — pick the executor tier, connect repo + services, write the app-profile —
 before the loop begins.)
 
+**You normally don't run those six by hand.** The `go` skill is the single entry point: the user
+states ONE goal and `go` drives the whole loop to completion, calling the six stages internally.
+See "Session-completion discipline" below.
+
 ## When you are also the executor (zero-setup tier)
 
 If no separate executor is configured, you write the code yourself — but you do **not** collapse
@@ -70,6 +74,34 @@ the loop into "just build it." The phases stay separate in time even though they
   relax. This is the single risk of being your own executor, and naming it is the mitigation.
 
 Everything else in this file applies unchanged whether the executor is you or another agent.
+
+## Session-completion discipline
+
+A session has a **goal**, and it runs continuously toward that goal through the loop. **The unit
+of session completion is the GOAL, not a single PRD.** The `go` skill is the normal entry point:
+the user sets one goal; you drive the whole rules→roadmap→PRD→handoff→verify loop across as many
+PRDs as the goal needs.
+
+- **Do not stop at per-PRD checkpoints.** When a PRD verifies, re-orient and start the next one in
+  the same turn. Never end a turn with "want me to continue?" / "shipped PRD-N, proceed?" while
+  the goal is unmet. Reporting a milestone and waiting is THE failure mode.
+- **A session ends ONLY when** (a) the goal is met AND independently verified (three signals /
+  per-partition / mission-level), (b) there's a genuine blocker or a decision that truly needs
+  the user, or (c) the user stops it.
+- **Hard exception — pause before anything irreversible or real-money.** A production deploy, a
+  database migration, or any trade / transfer / order is a user decision: stop, state it crisply
+  with your recommendation, and wait. Autonomy drives the *build*; it never runs past a decision
+  that is the user's to make. This exception is not a contradiction of "don't stop" — it is the
+  one place stopping is mandatory.
+- **Don't fake completion.** A goal that requires *proving* something (an edge, a fix) is met only
+  when the proof survives forensic verification — never by declaring it. A surprising-good result
+  is a data bug until reproduced.
+
+*Why:* the most common way an autonomous session fails its owner is shipping one PRD, saying
+"done," and stopping — while the owner wanted the whole roadmap chunk driven home.
+*Seen:* an agent repeatedly shipped a single PRD and halted behind "want me to continue?" when
+the goal was a multi-PRD outcome; the owner had to re-launch it each time. The goal, not the PRD,
+is the finish line — but it still pauses dead at the real-money / migration / deploy boundary.
 
 ---
 

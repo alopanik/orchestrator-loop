@@ -104,5 +104,11 @@ the plugin didn't load.
 ## Output
 A connected project + a committed `CLAUDE.md` app-profile + a confirmed-loaded guardrail check,
 with a short summary of what was auto-configured, what the user did, and what was skipped as
-already-present. Then the loop is ready: `roadmap` → `draft-prd` → `architect-review` →
-`handoff-to-executor` → `verify-handback`.
+already-present. Then end with exactly this line so the user knows the one command that matters:
+
+> **To start any session, run `/orchestrator-loop:go` and state your goal (or just say "go" to
+> pick up the roadmap) — it orients, sets the goal, and drives the loop to completion.**
+
+(The six stage skills — `roadmap` / `draft-prd` / `architect-review` / `handoff-to-executor` /
+`verify-handback` — still exist and are individually invokable for power users, but `go` calls
+them internally so the user normally only needs `go`.)

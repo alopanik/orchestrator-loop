@@ -7,7 +7,7 @@
   },
   "metadata": {
     "description": "Distribution marketplace for the orchestrator-loop plugin.",
-    "version": "0.3.4"
+    "version": "0.4.0"
   },
   "plugins": [
     {
@@ -17,7 +17,7 @@
         "repo": "alopanik/orchestrator-loop"
       },
       "description": "Turn Claude into a disciplined engineering lead: plans the work, writes the spec, hands the coding to an executor, then independently QAs the result. Enforces engineering guardrails and a skeptical, evidence-first mindset — distrust too-good results, find the root cause, stay honest. App-agnostic: bring your own project profile and tools.",
-      "version": "0.3.4",
+      "version": "0.4.0",
       "tags": [
         "orchestration",
         "prd",

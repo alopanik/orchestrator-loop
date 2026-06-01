@@ -73,6 +73,16 @@ decomposes it into a numbered roadmap, drafts each PRD, architect-reviews it, ha
 coding agent, then independently verifies the result against your database and your live UI —
 and only then accepts it. The executor writes the code; the orchestrator guarantees it's right.
 
+## One command to start a session
+You don't juggle the six skills. **To start any session, run `/orchestrator-loop:go` and state
+your goal (or just say "go" to pick up the roadmap) — it orients on your project, sets the goal
+as the definition of done, and drives the loop to completion**, looping across as many PRDs as
+the goal needs. It runs continuously and stops only when the goal is met and verified, a real
+decision needs you, or you halt it — pausing automatically before anything irreversible or
+real-money (a prod deploy, a DB migration, a trade). The six stage skills remain individually
+invokable for power users; `go` is a thin orchestrator over them plus the session-completion
+guardrail.
+
 ## Test it before you trust it
 Don't take the framing on faith — the plugin ships with a behavioral test kit in `test/`. It's
 a clean-room sample app-profile plus ten scenarios drawn from real incidents (a too-good A/B
