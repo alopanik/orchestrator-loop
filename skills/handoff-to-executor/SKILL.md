@@ -30,6 +30,19 @@ The executor (`~~executor`) writes the code; you do not. The handoff is a self-c
 - **Branch + acceptance.** Name the branch. Restate the acceptance tests. Require the executor
   to run them and report before/after numbers.
 
+## Arm the fail-closed gate (Claude Code)
+
+When you dispatch, register the PRD's **scriptable** acceptance checks with the Stop gate so the
+turn cannot end until they pass:
+
+```
+python3 "${CLAUDE_PLUGIN_ROOT}/hooks/stop_gate.py" set <PRD-ID> "<check cmd>" ["<check cmd>" ...]
+```
+
+Only commands a machine can run go here (a test, a lint, a query that exits nonzero on failure) —
+the un-gameable subset of the acceptance tests. The gate is fail-closed: a missing or erroring
+check counts as a failure. `verify-handback` clears it once the work is independently verified.
+
 ## After dispatch
 
 Wait for the handback. Do not start the next PRD. When the executor reports done, do NOT

@@ -90,6 +90,20 @@ local).
 Step back: does the app still serve its mission after this change, or did it drift? A change
 that passes its own tests but moves the product away from its purpose fails review.
 
+## Release the gate only on a real pass (Claude Code)
+
+The fail-closed Stop gate (`hooks/stop_gate.py`, armed at handoff) blocks the turn from ending
+while the PRD's scriptable checks are red. Clear it **only after** you have independently
+verified the work — never to make a red turn end:
+
+```
+python3 "${CLAUDE_PLUGIN_ROOT}/hooks/stop_gate.py" clear   # only once verification passes
+```
+
+If verification fails, leave the gate armed — the failing check *should* keep the turn open until
+it's fixed. Clearing a still-red gate to escape it is exactly the self-asserted "done" this
+framework exists to prevent.
+
 ## Terminate in strategy
 
 End with a verdict — accept / fix-list / redesign — and the concrete next action. Never a bare
