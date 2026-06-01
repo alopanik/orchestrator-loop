@@ -1,0 +1,1 @@
+I'd hold the handback. The naming needs a refactor before I accept, and you should add a test for the edge case first.

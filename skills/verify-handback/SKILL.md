@@ -85,6 +85,20 @@ local).
 - Re-run each acceptance test from the PRD against reality. Report ❌ for every miss with
   quoted evidence (the query, the response, the screenshot).
 
+## Scope your findings — two buckets, not one
+
+Being an adversary is not licence to nitpick. Sort every finding into exactly one bucket:
+
+- **Blocking** — it fails a *stated acceptance criterion*, breaks reality (a real regression), or
+  violates a sanity bound / freshness / security. These keep the gate red.
+- **Non-blocking note** — style, naming, structure you'd have done differently, or an edge case
+  the PRD listed as a **non-goal**. Surface it as a note; it does **not** block the handback.
+
+If acceptance is met and reality agrees, the verdict is **accept** — do not manufacture blockers.
+An adversary with no scope drives over-engineering and destroys the gate's signal: if everything
+blocks, nothing does. (This bound is what keeps the hardened verifier from becoming its own
+failure mode.)
+
 ## Mission-level
 
 Step back: does the app still serve its mission after this change, or did it drift? A change

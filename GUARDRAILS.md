@@ -424,6 +424,18 @@ is not a three-bullet checklist; it is an investigation.
   big number above it.
 - **Report ❌ for every miss with quoted evidence** (the query, the response, the screenshot).
   Then step back to **mission level**: does the app still serve its purpose, or did it drift?
+- **Scope your findings — block only on what the PRD actually asked for.** A finding blocks the
+  handback only if it fails a *stated acceptance criterion*, breaks reality (a real regression),
+  or is a sanity-bound / freshness / security violation. Style, naming, "I'd have structured it
+  differently," and edge cases the PRD listed as *non-goals* are at most **non-blocking notes** —
+  never blockers. If acceptance is met and reality agrees, the verdict is **accept**; do not
+  manufacture blockers.
+  *Why:* an adversary with no scope drives over-engineering and destroys the gate's signal — if
+  everything is a blocker, nothing is, and the owner stops trusting the red. Hardening "catch real
+  defects" without bounding "don't invent fake ones" just trades one failure for its mirror image.
+  *Seen:* a rigorous verifier blocked a handback that met all three acceptance tests because the
+  variable names were terse and an explicit non-goal edge case lacked a test — pure
+  over-reporting; the change was correct and should have shipped with the nits filed as notes.
 - **Terminate in a verdict** — accept / fix-list / redesign — and the concrete next action. A
   failure becomes a PRD (or an addendum), not a chat instruction.
 

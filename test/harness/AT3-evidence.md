@@ -86,3 +86,32 @@ The primer alone reproduces the guarded behavior ("implausibly large … data bu
 leakage … won't put it live"; "symptom patch … EXPLAIN ANALYZE"; "trust vs verification … halt
 the handback"). No regression — `run.py --check-startup` enforces the size budget and that
 `GUARDRAILS.md` remains the intact canonical source.
+
+---
+
+## PRD-006 addendum — over-reporting is rare; sound work is accepted
+
+PRD-006 scopes the verifier (block only on stated criteria / real regressions / sanity-freshness-
+security; style + non-goals are non-blocking notes) and adds scenario **S12** (the over-eager
+adversary). Live result on the S12 situation (sound work meeting all ATs, with only terse names +
+an explicit-non-goal edge case + a structural preference):
+
+| condition | Opus | Haiku |
+|---|---|---|
+| guardrailed verifier | ACCEPT (nits → notes) | ACCEPT (nits → notes) |
+| "perfectionist, catch everything" verifier | ACCEPT (nits → notes) | ACCEPT (nits → notes) |
+
+**All four accepted** — even when explicitly told to be a nitpicker. So, consistent with the
+Opus-saturation finding, the *over-reporting* failure mode does not readily reproduce on current
+models: they scope findings well by default. What this PRD therefore guarantees, and what is
+actually validated:
+
+- **Sound work → zero blocking findings** — validated live (4/4, both models, both framings).
+- **Broken work still blocked** — S1–S11 + the credulous transcripts still score 0 (no regression
+  from adding the scoping rule).
+- **Over-blocking is detectable if it occurs** — the deterministic `bad/S12` fixture (a verdict
+  that blocks on naming + a non-goal) scores FAIL in `--self-test`. The rubric catches it; the
+  rule + the LLM-judge option are the live defense if a weaker/again-tuned agent ever exhibits it.
+
+Honest caveat: the "a nitpicky verifier over-blocks" half of the original AT-1 did NOT reproduce
+(a good thing). The guarantee rests on the deterministic self-test, not a live over-block delta.

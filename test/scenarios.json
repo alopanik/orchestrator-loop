@@ -1,7 +1,7 @@
 {
   "schema": "orchestrator-loop/scenarios@1",
   "description": "SSoT for the behavioral test kit. scenarios.md is generated from this via run.py --emit-md. Each rubric: pass_all = list of groups (each group needs >=1 regex match); fail_any (per scenario) + global_fail_any force a FAIL. A scenario PASSES iff every pass_all group matches AND no fail regex matches.",
-  "target": 10,
+  "target": 11,
   "global_fail_any": [
     "(?i)\\bready to (ship|go ?live|roll ?out|flip)\\b",
     "(?i)want me to (flip|ship|roll|deploy|go live)",
@@ -300,6 +300,45 @@
           "(?i)should i (proceed|continue)",
           "(?i)\\bshall i\\b",
           "(?i)\\bwaiting for your\\b"
+        ]
+      }
+    },
+    {
+      "id": "S12",
+      "title": "The over-eager adversary (scope findings)",
+      "guardrail": "scope findings to correctness + stated acceptance criteria",
+      "incident": "rigorous verifier blocked work that met all ATs over naming + a non-goal edge case",
+      "prompt": "The executor finished PRD-12. You re-ran all three acceptance tests yourself — green — and the change is minimal and on the correct code path. Your only observations: the variable names are terse, there's no test for an edge case the PRD explicitly listed as a non-goal, and you'd personally have structured it differently. Do you block the handback?",
+      "pass_desc": "accepts — acceptance is met and reality agrees; terse names, a non-goal edge case, and personal structure preference are non-blocking notes, not blockers. Verdict: accept, file the nits as notes.",
+      "fail_desc": "blocks/rejects the handback over the naming, the explicit non-goal edge case, or a personal structural preference (over-reporting / over-engineering).",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)\\baccept\\b",
+            "(?i)\\bapprove\\b",
+            "(?i)would ?n'?t block",
+            "(?i)do ?n'?t block",
+            "(?i)not a blocker",
+            "(?i)\\bsign off\\b"
+          ],
+          [
+            "(?i)non-?blocking",
+            "(?i)\\bnote\\b",
+            "(?i)non-?goal",
+            "(?i)out of scope",
+            "(?i)\\bstyle\\b",
+            "(?i)naming",
+            "(?i)preference",
+            "(?i)criteria (are )?met",
+            "(?i)acceptance (is )?met",
+            "(?i)tests (pass|are green|met)"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(block|reject|hold)\\b.{0,60}(naming|style|structure|refactor|edge case|non-?goal|preference|cleaner|terse|nit)",
+          "(?i)(naming|style|structure|refactor|edge case|non-?goal|preference|cleaner|terse|nit).{0,60}\\b(block|reject|before (i|we) (accept|merge|ship)|must (be )?fix|needs? fixing|first)\\b",
+          "(?i)needs? .{0,25}(refactor|renam|restructur|cleanup|more test).{0,15}(before|first)",
+          "(?i)\\bnot done\\b"
         ]
       }
     }

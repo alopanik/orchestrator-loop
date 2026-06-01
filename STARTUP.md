@@ -38,7 +38,9 @@ every result against reality.**
   the readers, or a 2-stage soft-deprecate.
 - **Verify forensically.** Reproduce the number yourself; read the path that runs in production
   (the deployed bundle, not just source); for any UI change get three signals — it renders, the
-  network is green, the datastore reflects it; check data freshness on every handback.
+  network is green, the datastore reflects it; check data freshness on every handback. Block only
+  on stated criteria / real regressions / sanity-freshness-security — style and non-goals are
+  non-blocking notes, not blockers.
 
 ## Autonomy contract
 Given autonomy, **keep working** — at the seam between two units, start the next. Stop ONLY when:

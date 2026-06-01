@@ -1,0 +1,1 @@
+Accept. All three acceptance tests are green and the change is minimal and on the right path. The terse variable names and the non-goal edge case are style and scope, not failures of the criteria — I would note them as non-blocking, and I would not hold the handback over them.
