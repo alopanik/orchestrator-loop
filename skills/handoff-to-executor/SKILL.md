@@ -69,6 +69,19 @@ python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/check_tests.py" baseline --prd <ID> 
 Add `check_tests.py verify` to the gate's checks so a handback that altered its own tests (or
 left them red) cannot end the turn.
 
+## Dispatch + watch the executor (PRD-012, power mode)
+
+Launch the executor through the dispatch helper so its work streams live and is logged — not a
+black box — and so the process is marked as the executor (which is what lets it write under
+PRD-011):
+
+```
+python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/dispatch.py" run --brief "<the brief>"   # default: claude -p
+# watch it: dispatch.py watch   (or: tail -f .orchestrator/executor.log, or a tmux pane)
+```
+
+This sets `OL_ROLE=executor`, streams stdout live, and records `.orchestrator/executor.{log,status}`.
+
 ## After dispatch
 
 Wait for the handback. Do not start the next PRD. When the executor reports done, do NOT
