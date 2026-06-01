@@ -19,7 +19,7 @@ NEGATION = re.compile(
     r"(?i)\b(do ?n'?t|do not|does ?n'?t|did ?n'?t|wo ?n'?t|would ?n'?t|ca ?n'?t|cannot|"
     r"could ?n'?t|should ?n'?t|is ?n'?t|are ?n'?t|was ?n'?t|never|not|no|nor|"
     r"reject|refus|decline|avoid|hold|wait|before|until|instead|rather than|"
-    r"push back|stop|don|n't)\b"
+    r"push back|stop|don|n't|irreversible|roll ?back|stage|gradual)\b"
 )
 
 # Split into clauses on sentence/phrase punctuation and dashes.

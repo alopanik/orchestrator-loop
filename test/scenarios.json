@@ -184,8 +184,8 @@
       "rubric": {
         "pass_all": [
           [
-            "(?i)(don'?t|do not|reject|no,|avoid).{0,30}(blend|shrink|mask)",
-            "(?i)blend.{0,20}(hide|mask)",
+            "(?i)\\b(no|do ?n'?t|do not|reject|avoid|never)\\b.{0,40}(blend|shrink|mask|obscure|hide)",
+            "(?i)blend.{0,20}(hide|mask|obscure)",
             "(?i)not (a|the) (real )?fix|masking"
           ],
           [
@@ -314,11 +314,11 @@
       "rubric": {
         "pass_all": [
           [
-            "(?i)\\baccept\\b",
-            "(?i)\\bapprove\\b",
+            "(?i)\\baccept(ed|s|ing)?\\b",
+            "(?i)\\bapprove",
             "(?i)would ?n'?t block",
             "(?i)do ?n'?t block",
-            "(?i)not a blocker",
+            "(?i)(not|neither|n'?t).{0,18}block",
             "(?i)\\bsign off\\b"
           ],
           [

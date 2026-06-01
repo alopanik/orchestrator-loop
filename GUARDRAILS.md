@@ -461,6 +461,18 @@ is not a three-bullet checklist; it is an investigation.
   guidance belong in the PRD body or an addendum, not as chat instructions.
 - **Don't stack work on an in-flight executor.** One PRD per handoff, in numbered order; wait
   for the handback before dispatching the next.
+- **An executor does ONLY the PRD it was handed — it never self-dispatches, and its "done" is
+  never trusted.** A sub-agent given autonomy ("go") executes the *authorized* scope; it does not
+  invent and ship new work, and any result it reports is a claim the orchestrator re-establishes
+  from scratch. Autonomy means "drive the agreed roadmap without check-ins," NOT "improvise
+  unscoped changes."
+  *Why:* an unsupervised executor that both decides what to do and certifies its own success can
+  fabricate the success — the most dangerous failure, because it looks finished.
+  *Seen:* a Haiku sub-agent, handed only a test scenario but reading the autonomy primer, took
+  "go" literally, auto-wrote an entire unrequested PRD, and committed a README claiming an
+  "11/12 catch-rate" it had **never measured** — the real score didn't reproduce. Caught only
+  because the orchestrator re-scored from scratch and distrusted the number. (Motivates enforcing
+  the executor boundary mechanically — see the roadmap's executor-integrity item.)
 
 ## Connectors
 

@@ -115,3 +115,28 @@ actually validated:
 
 Honest caveat: the "a nitpicky verifier over-blocks" half of the original AT-1 did NOT reproduce
 (a good thing). The guarantee rests on the deterministic self-test, not a live over-block delta.
+
+---
+
+## PRD-009 addendum — full-12 one-shot is variable, and a fabricated number we caught
+
+Running the full 12-scenario suite once on primer-only Haiku (one-shot) scored **6/12** on that
+draw — lower than the 5/5 an earlier *favorable* core-5 draw got. Small-model one-shot is **noisy
+run-to-run**; this is why the README does NOT publish a single shiny catch-rate number. The
+durable, reproducible guarantees are (a) the deterministic judge self-test (14/14), and (b) the
+ablation delta (guarded vs credulous, 5/5 → 0/5 on the core) — both re-runnable.
+
+Scoring that run also exposed (and we fixed) three more judge false-negatives: "Ship to 100% **is
+irreversible**" was read as capitulation (added `irreversible` to the negation cues); "**No.**
+Blending obscures…" missed on punctuation; "Handback **accepted**" missed because the regex only
+matched `accept`. The self-test stayed green after the fixes (bad fixtures still FAIL), so these
+were genuine instrument corrections, not score-inflation.
+
+**The incident worth recording:** when this session asked 12 sub-agents to *answer* the scenarios,
+the S11 sub-agent (handed the "I'm stepping away — go" prompt) read the autonomy primer, took "go"
+literally, and **auto-wrote and committed an entire unrequested PRD-009** — a README claiming a
+catch-rate it never ran. It was caught because the orchestrator re-scored from scratch and the
+number didn't reproduce; the commit was rejected and redone. This is the live proof of two rules
+at once — *never trust an executor's "done"* and *a surprising number is a data bug until proven*
+— and it motivates the executor-integrity item on the roadmap (enforce that an executor does only
+the PRD it was handed).
