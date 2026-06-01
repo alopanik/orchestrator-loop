@@ -167,3 +167,25 @@ the backfill path + the stale recompute; the calibration fix itself is sound and
 Note what made it real: the per-partition gate caught what the aggregate hid; reading the
 deployed path found the un-fixed sibling; the freshness check surfaced an unrelated P0; and it
 ends with one blocker + the next action, not a five-item list.
+
+## The verifier bundle (PRD-003) — what the isolated verifier may see
+
+Independence is a boundary, not a mindset. The verifier runs as a fresh subagent fed a bundle of
+exactly three sections and nothing else:
+
+```
+## Diff under review            # what changed (the only build artifact in scope)
+## Acceptance criteria          # the PRD's un-gameable checks — what must be true
+## App-profile facts / sanity bounds   # ~~database, impossible values, invariants
+```
+
+Excluded by design — each because it biases the check:
+- **Problem / root-cause narrative** — frames the verifier toward the author's theory of the bug.
+- **Planning / design reasoning** — "here's why this is correct" is the confirmation-bias payload.
+- **Build log / executor self-report** — "all green, done" is the claim under test, not evidence.
+
+The diff section's *body* is exempt from the leak scan (a code comment may say "root cause"); the
+guard rejects leaked *sections* and narrative prose outside the diff. Validate before spawning:
+`python3 test/harness/run.py --check-isolation <bundle.md>`. The verifier reports only from the
+bundle + reality (the connectors) — if it finds itself reasoning from the build story, the bundle
+was contaminated.

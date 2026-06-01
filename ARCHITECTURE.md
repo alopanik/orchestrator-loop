@@ -24,6 +24,7 @@ the framework.
 | Scenario data (SSoT) | The scenarios + machine-scorable rubric | `test/scenarios.json` *(PRD-001)* | written by hand; read by the harness |
 | Scenario narrative | Human-readable companion of the above | `test/scenarios.md` | derived from / kept in sync with the JSON |
 | Harness | Run scenarios → score → catch-rate | `test/harness/` *(PRD-001)* | one entry point: `run.py` |
+| Verifier-isolation guard | Assert a verifier bundle leaks no build context | `test/harness/check_isolation.py` *(PRD-003)* | `run.py --check-isolation` |
 | Decision ledger | Append-only record of gate decisions | `test/ledger.jsonl` *(PRD-008)* | one writer: the gate script |
 
 **Invariant:** one scenarios SSoT (`scenarios.json`); the `.md` is a view of it, never a second

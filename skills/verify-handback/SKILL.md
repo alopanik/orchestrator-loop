@@ -17,6 +17,31 @@ against reality — as an adversary trying to break the claim, not a co-author h
 > rules were paid for live in `GUARDRAILS.md` (Verification discipline · Epistemics · Analytical
 > rigor) — load them on demand; the startup primer carries only the always-on core.
 
+## Run as an isolated subagent — independence is structural, not a vibe
+
+Confirmation bias is strongest when the mind that built the change also blesses it. So the
+verifier runs as a **fresh subagent** whose context is a **whitelisted bundle and nothing else**:
+
+1. **the diff** under review,
+2. **the acceptance criteria** (the PRD's un-gameable checks — what must be true),
+3. **the app-profile facts + sanity bounds** (`~~database`, impossible values, invariants).
+
+It must NOT receive: the PRD's problem/root-cause narrative, any planning or design reasoning,
+the build log, or the executor's self-report. The verifier learns *what changed* and *what must
+hold*, then establishes the truth from the bundle + reality (the connectors) — never from the
+build story. (Zero-setup, when you are your own verifier: spawn the subagent anyway, or at
+minimum assemble the bundle and refuse to consult the build context while verifying.)
+
+Assemble the bundle, then check it is clean before you spawn:
+
+```
+python3 test/harness/run.py --check-isolation <bundle.md>   # exits nonzero if build context leaked
+```
+
+A leaked `## Root cause` / `## Build log` / "why it works" / "the executor reports" fails the
+check — fix the bundle, don't verify a contaminated one. See `references/methodology.md` for the
+bundle spec and why each exclusion exists.
+
 ## Be forensic (the floor is a checklist; the method is an investigation)
 
 - **Reproduce the exact number** yourself — re-run the query/test and get the same figure.

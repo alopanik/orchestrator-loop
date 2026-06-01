@@ -256,6 +256,7 @@ def main():
     ap.add_argument("--emit-md", action="store_true")
     ap.add_argument("--check-sync", action="store_true")
     ap.add_argument("--check-startup", action="store_true")
+    ap.add_argument("--check-isolation", metavar="BUNDLE", help="verify a verifier bundle is build-context isolated (PRD-003)")
     ap.add_argument("--self-test", action="store_true")
     args = ap.parse_args()
 
@@ -268,6 +269,9 @@ def main():
         return cmd_check_sync(doc)
     if args.check_startup:
         return cmd_check_startup()
+    if args.check_isolation:
+        import check_isolation
+        return check_isolation.main([args.check_isolation])
     if args.self_test:
         return cmd_self_test(doc)
 
