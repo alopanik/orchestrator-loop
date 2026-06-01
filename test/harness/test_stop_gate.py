@@ -116,6 +116,41 @@ def _(pdir):
     return r.returncode == 1, f"check exit {r.returncode}"
 
 
+def read_ledger(pdir):
+    p = os.path.join(pdir, ".orchestrator", "ledger.jsonl")
+    if not os.path.exists(p):
+        return []
+    return [json.loads(l) for l in open(p) if l.strip()]
+
+
+@case("ledger: a block writes a block entry carrying the failing check's evidence")
+def _(pdir):
+    write_manifest(pdir, {"prd": "L1", "active": True, "checks": [{"name": "bad", "cmd": "false"}]})
+    run_hook(pdir, {})
+    led = read_ledger(pdir)
+    if not led:
+        return False, "no ledger entry"
+    e = led[-1]
+    ok = e.get("decision") == "block" and any(c["name"] == "bad" and not c["ok"] for c in e.get("checks", []))
+    return ok, f"last entry={e}"
+
+
+@case("ledger: a pass writes a pass entry")
+def _(pdir):
+    write_manifest(pdir, {"prd": "L2", "active": True, "checks": [{"name": "ok", "cmd": "true"}]})
+    run_hook(pdir, {})
+    led = read_ledger(pdir)
+    return bool(led) and led[-1].get("decision") == "pass", f"ledger={led}"
+
+
+@case("ledger: summary surface renders a line")
+def _(pdir):
+    write_manifest(pdir, {"prd": "L3", "active": True, "checks": [{"name": "bad", "cmd": "false"}]})
+    run_hook(pdir, {})
+    r = manage(pdir, "ledger")
+    return "BLOCK" in r.stdout and "L3" in r.stdout, f"stdout={r.stdout!r}"
+
+
 def main():
     passed = failed = 0
     for name, fn in CASES:

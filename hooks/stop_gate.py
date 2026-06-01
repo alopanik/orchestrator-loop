@@ -23,12 +23,14 @@ checks fail. The escapes from a genuinely stuck gate are `clear` and Claude Code
 consecutive-block cap (CLAUDE_CODE_STOP_HOOK_BLOCK_CAP, default 8) — the gate cannot trap a
 session forever, but it also can't be bypassed by simply trying to stop again.
 """
+import datetime
 import json
 import os
 import subprocess
 import sys
 
 MANIFEST_REL = os.path.join(".orchestrator", "gate.json")
+LEDGER_REL = os.path.join(".orchestrator", "ledger.jsonl")
 CHECK_TIMEOUT = 180
 
 
@@ -82,6 +84,14 @@ def run_checks(pdir, checks):
     return results
 
 
+def append_ledger(pdir, entry):
+    """Append one gate decision to the append-only ledger. The gate is the sole writer."""
+    entry = {"ts": datetime.datetime.now().isoformat(timespec="seconds"), **entry}
+    os.makedirs(os.path.join(pdir, ".orchestrator"), exist_ok=True)
+    with open(os.path.join(pdir, LEDGER_REL), "a") as f:
+        f.write(json.dumps(entry) + "\n")
+
+
 def hook_mode():
     try:
         raw = sys.stdin.read()
@@ -98,16 +108,25 @@ def hook_mode():
     if state == "none" or state == "inactive":
         return 0  # nothing to enforce — never block a normal turn
     if state == "corrupt":
+        append_ledger(pdir, {"prd": "?", "decision": "block", "source": "stop-gate",
+                             "checks": [{"name": "manifest", "ok": False, "detail": "gate.json unparseable"}]})
         sys.stderr.write("orchestrator-loop gate: .orchestrator/gate.json is unparseable — "
                          "fail-closed (blocking). Fix or `stop_gate.py clear`.\n")
         return 2
 
     results = run_checks(pdir, m.get("checks", []))
     failed = [(n, d) for (n, ok, d) in results if not ok]
+    prd = m.get("prd", "gate")
+    append_ledger(pdir, {
+        "prd": prd,
+        "decision": "block" if failed else "pass",
+        "source": "stop-gate",
+        "checks": [{"name": n, "ok": ok, "detail": d} for (n, ok, d) in results],
+    })
     if not failed:
         return 0  # all green — allow the stop
 
-    lines = [f"orchestrator-loop gate BLOCKED end of turn — {m.get('prd','gate')} checks not green:"]
+    lines = [f"orchestrator-loop gate BLOCKED end of turn — {prd} checks not green:"]
     for n, d in failed:
         lines.append(f"  ✗ {n}: {d}")
     lines.append("Fix the failing check(s) and try again. (Override: `stop_gate.py clear`.)")
@@ -176,6 +195,40 @@ def cmd_check():
     return 0 if all(ok for _, ok, _ in results) else 1
 
 
+def cmd_ledger(argv):
+    pdir = project_dir()
+    tail = None
+    if "--tail" in argv:
+        try:
+            tail = int(argv[argv.index("--tail") + 1])
+        except (ValueError, IndexError):
+            tail = None
+    p = os.path.join(pdir, LEDGER_REL)
+    if not os.path.exists(p):
+        print("ledger empty (no gate decisions recorded yet)")
+        return 0
+    entries = []
+    for line in open(p):
+        line = line.strip()
+        if line:
+            try:
+                entries.append(json.loads(line))
+            except Exception:
+                pass
+    shown = entries[-tail:] if tail else entries
+    blocks = 0
+    for e in shown:
+        checks = e.get("checks", [])
+        n_ok = sum(1 for c in checks if c.get("ok"))
+        dec = e.get("decision", "?").upper()
+        if dec == "BLOCK":
+            blocks += 1
+        fails = ",".join(c["name"] for c in checks if not c.get("ok")) or "-"
+        print(f"  {e.get('ts','?')}  {e.get('prd','?'):<10} {dec:<5} {n_ok}/{len(checks)}  {fails}")
+    print(f"\n{len(shown)} decision(s) shown — {blocks} block(s), {len(shown)-blocks} pass(es).")
+    return 0
+
+
 def main(argv):
     if not argv:
         return hook_mode()
@@ -188,6 +241,8 @@ def main(argv):
         return cmd_status()
     if sub == "check":
         return cmd_check()
+    if sub == "ledger":
+        return cmd_ledger(argv[1:])
     print(f"unknown subcommand: {sub}", file=sys.stderr)
     return 2
 
