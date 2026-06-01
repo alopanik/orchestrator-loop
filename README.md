@@ -51,7 +51,15 @@ claude plugin marketplace add <owner>/orchestrator-loop
 claude plugin install orchestrator-loop
 ```
 
-Then copy `app-profile.template.md` into your repo as `CLAUDE.md` and fill it in.
+Then run the **`setup`** skill (say "set up orchestrator-loop") — it picks your executor
+(default: Claude Code via Desktop Commander), maps your connectors, writes the `CLAUDE.md`
+app-profile, and confirms the guardrails loaded. Or do it by hand: copy `app-profile.template.md`
+into your repo as `CLAUDE.md` and fill it in.
+
+> **No hardcoded executor / no bundled auto-install.** The framework references the executor as
+> `~~executor` and the `setup` skill records your choice in the app-profile — it does not bake a
+> specific tool into the plugin. It verifies what's installed and guides any gap rather than
+> assuming a bundled MCP auto-configures (Cowork doesn't reliably honor that).
 
 > **Guardrails delivery.** The guardrails live in `GUARDRAILS.md`. In Claude Code they load
 > automatically via the SessionStart hook. **Cowork does not reliably fire hooks**, so the
