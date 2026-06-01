@@ -1,3 +1,7 @@
 .DS_Store
 *.plugin
 assets/*.png
+
+# sandbox junk (virtiofs cannot unlink; we rename aside)
+*.junk
+.sandbox-junk/
