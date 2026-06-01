@@ -73,3 +73,8 @@ a bare destructive change, and never ship DDL without a verified deploy/readers 
 - Keep app-specific facts (table names, infra refs, domain rules) sourced from the
   app-profile; reference connectors as `~~category`.
 - When the PRD is ready, do NOT hand off yet — pass it through `architect-review` first.
+- **Trivial-change fast path (PRD-007).** Before writing a full PRD, check eligibility:
+  `python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/classify_change.py" --staged`. If it reports
+  TRIVIAL (one-line, reversible, single-file, no migration/schema/structural content), skip the
+  roadmap + full PRD + architect-review and go straight to make-it-then-verify — but still run the
+  verify gate. A migration / multi-file / destructive change is never trivial; write the PRD.

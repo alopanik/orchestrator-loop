@@ -27,6 +27,7 @@ the framework.
 | Harness | Run scenarios → score → catch-rate | `test/harness/` *(PRD-001)* | one entry point: `run.py` |
 | Verifier-isolation guard | Assert a verifier bundle leaks no build context | `test/harness/check_isolation.py` *(PRD-003)* | `run.py --check-isolation` |
 | Tests guard | Tests-first baseline + tamper/green check | `test/harness/check_tests.py` + `.orchestrator/tests.json` *(PRD-005)* | `baseline` writes; the gate runs `verify` |
+| Change classifier | Decide trivial-fast-path eligibility (gate still applies) | `test/harness/classify_change.py` *(PRD-007)* | `go` / `draft-prd` |
 | Decision ledger | Append-only record of gate decisions | `test/ledger.jsonl` *(PRD-008)* | one writer: the gate script |
 
 **Invariant:** one scenarios SSoT (`scenarios.json`); the `.md` is a view of it, never a second

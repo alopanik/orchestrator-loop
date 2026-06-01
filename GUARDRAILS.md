@@ -394,6 +394,15 @@ this section is dormant — but the moment a decision rests on a measured number
 - **Every PRD declares its user-visible-surface impact** in one header line, so the owner
   knows plumbing-vs-visible without reading the spec.
 - **PRD numbers ARE execution order.** Lowest number ships first; no out-of-band reordering.
+- **Trivial-change fast path — drop the ceremony, never the gate.** A one-line, reversible,
+  single-file change with no migration/schema/structural content may skip the roadmap + full PRD
+  + architect-review and go straight to "make it, verify it." It still passes the verify gate —
+  the fast path drops *planning* ceremony, not *verification*. A migration / schema / DDL /
+  multi-file / destructive change **never** qualifies, regardless of line count. Don't eyeball
+  "trivial" — classify it: `test/harness/classify_change.py` is the SSoT for what's eligible.
+  *Why:* without a defined fast path, people either drag full ceremony over a typo (theater) or
+  skip the loop entirely for "small stuff" — and that skip becomes the ungated side door the gate
+  was supposed to close. A classified fast path keeps small changes cheap *and* gated.
 - **A PRD proves the problem with numbers.** It states: the problem *with concrete evidence*
   (a query result, a failing test, a log line), the **root cause** (the mechanism, not the
   symptom), the scope, the non-goals, **un-gameable acceptance tests** measured against
