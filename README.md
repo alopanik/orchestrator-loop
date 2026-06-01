@@ -1,230 +1,183 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/loop.svg" alt="orchestrator-loop: one goal in, verified result out. Six skills run top to bottom, with reject paths looping back from architect-review and verify." width="100%">
+<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/hero.svg" alt="orchestrator-loop — set one goal, get a verified result, stop babysitting" width="100%">
+
+<p>
+  <img src="https://img.shields.io/badge/version-0.6.0-2f81f7?style=flat-square" alt="version 0.6.0">
+  <img src="https://img.shields.io/badge/license-MIT-3fb950?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/Claude%20Code%20%C2%B7%20Cowork-d97757?style=flat-square" alt="Claude Code and Cowork">
+  <img src="https://img.shields.io/badge/tests-40%2F40-3fb950?style=flat-square" alt="40 of 40 tests passing">
+  <img src="https://img.shields.io/badge/plugin%20validate-passing-3fb950?style=flat-square" alt="claude plugin validate passing">
+</p>
+
+<p>
+  <a href="#why-it-exists">Why</a> &nbsp;•&nbsp;
+  <a href="#the-team-in-one-command">The team</a> &nbsp;•&nbsp;
+  <a href="#how-it-works">How it works</a> &nbsp;•&nbsp;
+  <a href="#the-proof">The proof</a> &nbsp;•&nbsp;
+  <a href="#quick-start">Quick start</a> &nbsp;•&nbsp;
+  <a href="#execution-modes">Modes</a> &nbsp;•&nbsp;
+  <a href="#architecture">Architecture</a>
+</p>
 
 </div>
 
+**orchestrator-loop turns Claude into a disciplined engineering team you delegate to.** You set one
+goal. It refines the goal into testable requirements, decomposes it into numbered PRDs, builds each
+one, and then **verifies its own work like an adversary** — looping across as many PRDs as the goal
+needs and stopping only when the work is *proven* done. You review evidence, not diffs.
+
+```text
+$ /orchestrator-loop:go   "ship per-org rate limiting, verified against the live DB"
+
+◆ refine     one-line ask → testable definition of done   (3 questions, then autonomous)
+◆ roadmap    PRD-001 schema · PRD-002 middleware · PRD-003 dashboard
+◇ PRD-001    draft → architect-review ✓ → build → verify ✓        committed
+◇ PRD-002    draft → architect-review ✓ → build → verify ✗
+             reproduced: limiter off-by-one on burst → fixed → verify ✓   committed
+◇ PRD-003    draft → architect-review ✓ → build → verify ✓        renders · network 200 · rows match
+■ 3/3 PRDs verified against the live system · every gate decision logged to the ledger
+  paused at the one boundary that's yours — the production deploy. Recommendation attached.
+```
+
+<div align="center"><sub>One goal in. A chain of independently verified PRDs out. No “want me to continue?”.</sub></div>
+
 <br/>
 
-# orchestrator-loop
+## Why it exists
 
-**Set one goal. Get a verified result. Stop babysitting.**
+AI coding agents are a revelation — but you only save real time by **delegating**, not by
+micromanaging. The bottleneck stopped being *writing* code; it's *trusting* it. Most agent loops
+hand you a confident "done" you still have to babysit, re-run, and second-guess.
 
-AI coding agents are a revelation — but you only save real time by *delegating*, not by
-micromanaging. orchestrator-loop turns Claude into a disciplined engineering lead: you state a
-single session goal; it refines that goal with you into fully-covered requirements, decomposes
-it into numbered PRDs, builds each one, and then **verifies its own work like an adversary** —
-looping across as many PRDs as the goal needs, without stopping to ask *"want me to continue?"*
+orchestrator-loop removes the babysitting by making the agent **prove** its work:
 
-App-agnostic by design: the framework knows *how to work*; you supply *what your app is* through
-a one-time `CLAUDE.md` app-profile.
+- **One goal, not a hundred prompts.** State the outcome; the loop refines it, plans it, and drives
+  it to completion across multiple PRDs without check-ins.
+- **A verifier that's an adversary, not a cheerleader.** Every "done" is a claim, re-established
+  against reality — the deployed path, the real numbers, per-partition — by a fresh agent that
+  never saw the build reasoning.
+- **Gates that fail closed.** A turn *cannot* end on a self-asserted "done." Tests can't be edited
+  green. The orchestrator can't quietly write the code it's supposed to review.
+- **Evidence, not vibes.** Every gate decision and its proof is logged; you read the ledger, not
+  the diff.
 
-## An engineering team in a loop
+The planning half of this is now commodity. The **verifier is the moat** — it's what makes
+autonomous delegation trustworthy enough to walk away from.
 
-A real change normally passes through five roles: a **PM** who turns a vague ask into testable
-requirements, an **architect** who catches layering before code, an **engineer** who builds it, a
-**QA** who tries to break it, and a **release gatekeeper** who won't let unproven work ship.
-orchestrator-loop runs all five as one delegated loop:
+<br/>
 
-| Role | The skill / gate that does it |
+## The team in one command
+
+A real change normally moves through five people. orchestrator-loop runs all five — and *enforces*
+each hand-off so none can be skipped or faked:
+
+| Role on a team | The hand-off it removes | Skill | Enforced by | Lives in |
+|---|---|---|---|---|
+| **Product / PM** — turns a vague ask into testable requirements | the spec round-trip | `/go` refinement | requirements must be testable before any code | `skills/go` |
+| **Architect** — catches layering & forks before code | the design review meeting | `/architect-review` | five structural questions answered *in* the PRD | `skills/architect-review` |
+| **Engineer** — writes the code | "who's free to build this?" | `/handoff-to-executor` | one PRD in flight; executor wired to the *right* project (preflight) | `skills/handoff-to-executor` · `hooks/enforce_executor.py` |
+| **QA** — tries to break it | the back-and-forth on "is it really done?" | `/verify-handback` | a context-isolated adversary reproduces the numbers | `skills/verify-handback` · `test/harness/check_isolation.py` |
+| **Release gatekeeper** — won't let unproven work ship | the merge argument | the fail-closed Stop gate | the turn can't end while checks are red; every decision logged | `hooks/stop_gate.py` |
+
+**What that's worth:** the coordination between those five roles collapses into one goal you hand
+off. You stop supervising each diff and start reviewing *evidence* — Anthropic now writes
+[≈100% of its own code with Claude, with "scaffolds to let the team trust it"](https://www.itpro.com/software/development/anthropic-labs-chief-mike-krieger-claims-claude-is-essentially-writing-itself-and-it-validates-a-bold-prediction-by-ceo-dario-amodei).
+orchestrator-loop *is* that trust scaffold.
+
+<br/>
+
+## How it works
+
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/loop.svg" alt="The loop: one goal → go → roadmap → draft-prd → architect-review → handoff → verify → verified done, with reject paths looping back to draft-prd" width="62%">
+
+</div>
+
+The loop is `rules → roadmap → PRD → handoff → verify`, driven from one goal by `/go`. Six
+enforcement mechanisms are what make it more than a checklist:
+
+| Mechanism | What it guarantees | File |
+|---|---|---|
+| **Fail-closed gate** | A `Stop` hook refuses to end the turn while the PRD's scriptable checks are red. Missing or erroring counts as failure — never a silent pass. | `hooks/stop_gate.py` |
+| **Independent verifier** | `verify-handback` runs as a fresh subagent fed *only* the diff + acceptance criteria + app facts; a guard rejects any bundle that leaks the build story. | `test/harness/check_isolation.py` |
+| **Test tamper-guard** | Acceptance tests are committed **failing first**; a handback that edited its own tests to go green is rejected. | `test/harness/check_tests.py` |
+| **Connector preflight** | Before dispatch, each tool is verified to point at the project your `CLAUDE.md` names — a wrong Supabase/Vercel fails closed. | `test/harness/preflight.py` |
+| **Scoped findings** | The verifier blocks only on correctness / real regressions / sanity / freshness / security. Style and non-goals are notes — it can't over-engineer. | `GUARDRAILS.md` |
+| **Decision ledger** | Every gate decision (pass/block + the evidence) is appended, with a one-line summary surface. | `hooks/stop_gate.py` → `.orchestrator/ledger.jsonl` |
+
+<br/>
+
+## The proof
+
+This isn't a manifesto — it's a test you can run. The kit is 12 clean-room scenarios, each a
+planted defect mapped to a guardrail and a real incident.
+
+```bash
+# Model-free — proves the harness itself is sound (runs anywhere, no agent needed):
+python3 test/harness/run.py --self-test        # the judge discriminates 14/14 good/bad fixtures
+python3 test/harness/run.py --check-startup     # the always-on primer stays in budget, canon intact
+
+# Live — the catch-rate, run through your own authenticated agent:
+python3 test/harness/run.py                     # 12 scenarios → per-scenario PASS/FAIL + catch-rate
+```
+
+Three things hold up under independent re-testing (see [`test/harness/AT3-evidence.md`](test/harness/AT3-evidence.md)):
+
+- **The harness measures something.** A deliberately credulous transcript scores **0**; a skeptical
+  one scores full. The judge is not a rubber stamp — 14/14, deterministic.
+- **The guardrails cause the catch.** Same small model, same scenarios: **5/5 with the guardrails,
+  0/5 without.** Strip the rulebook and the score collapses.
+- **It turns a cheap executor into a careful one.** Frontier models already reason this way; the
+  guardrails make a smaller, faster, autonomous executor do the same — and you can re-run the proof
+  yourself any time.
+
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/gates.svg" alt="Seven fail-closed gates per cycle: refinement, roadmap dependency, draft-PRD proof, architect-review, handoff scope, verify-handback, session completion" width="58%">
+
+</div>
+
+**What it refuses to ship** — each a real incident class, each a scenario in the kit:
+
+| The claim it distrusts | What the loop does instead |
 |---|---|
-| Requirements / PM | `go` refinement — a one-line ask → a testable definition of done |
-| Architect | `architect-review` — five structural questions answered *in the PRD*, pre-code |
-| Engineer | `handoff-to-executor` → the Claude Code executor (or you, solo) |
-| QA / verifier | `verify-handback` — a context-isolated adversary that reproduces the numbers |
-| Release gatekeeper | the fail-closed Stop gate + tests-guard + decision ledger |
-
-**What that's worth, stated honestly (we don't ship fabricated productivity multipliers — that's
-the whole point):**
-- **Coordination collapsed:** the hand-offs between those five roles become one goal you delegate.
-- **Time saved = supervision removed.** You review *evidence* (reproduced numbers, the ledger),
-  you don't re-run the work or babysit each diff. Anthropic now writes [≈100% of its code with
-  Claude, with "scaffolds… to let the team trust it"](https://www.itpro.com/software/development/anthropic-labs-chief-mike-krieger-claims-claude-is-essentially-writing-itself-and-it-validates-a-bold-prediction-by-ceo-dario-amodei)
-  — orchestrator-loop is that trust scaffold, so you can delegate whole roadmap chunks instead of
-  supervising line by line.
-- **Quality you can measure, not assert:** a 12-scenario catch-rate you run yourself; on a small
-  executor the guardrails take it from **0/5 → 5/5** on the core defect classes; the gate
-  *mechanically* blocks a tampered or unproven handback. The quality delta is "defects a
-  self-asserted *done* would have shipped, caught instead."
-
-<br/>
-
-## The moat: forensic verification, not process theater
-
-The planning half of this loop (refine → decompose → spec → hand off) is now commodity — lots of
-tools ship it. The differentiated, asymmetric part is the **verifier**: the thing that makes
-autonomous delegation *trustable* enough to walk away from.
-
-Most handoff loops check *process* — PR format, test coverage, "the code looks right."
-orchestrator-loop checks *reality*: it reproduces the exact number itself, reads the **deployed**
-path (not `git grep`), gates **per partition** so a break in one cohort can't hide under a global
-average, and treats every "done" as a claim to be re-established from scratch. The verifier runs
-as a **fresh, context-isolated subagent** that sees only the diff + the acceptance criteria — never
-the builder's "here's why it works" — so it can't inherit the builder's blind spots.
+| "+23 pts retention in a one-week A/B — ship to 100%." | Refuses; reproduces the number; finds the assignment leak. *(S1)* |
+| "Dashboard's green, error is below the chance floor." | Flags it *structurally impossible* — the monitor reads a leaked table. Quarantine it. *(S2)* |
+| "Canary is −3 corpus-wide, healthy." | Re-runs **per partition** — one day's slice sits at +57. *(S3)* |
+| "0 references in source, dropped the column, done." | Reads the **deployed** bundle — the live frontend still queries it. *(S6 / S9)* |
 
 <br/>
 
 ## Aligned with Anthropic's Claude Code guidance
 
-orchestrator-loop is, deliberately, an *enforced* implementation of the patterns Anthropic itself
-recommends — it turns "best practice" into "can't skip it":
+orchestrator-loop is a deliberate, *enforced* implementation of the patterns Anthropic itself
+publishes — it turns "best practice" into "can't skip it":
 
-| Anthropic guidance | orchestrator-loop makes it enforced |
+| Anthropic guidance | How orchestrator-loop enforces it |
 |---|---|
-| Separate research/planning from implementation; prevent code-writing at the start | Plan → build → verify stay distinct; in power mode a hook *blocks* the orchestrator from coding (PRD-011) |
-| `CLAUDE.md` as short, explicit production prompts | App-profile is the SSoT for facts; the session primer is 50 lines, full rules on demand (PRD-002) |
-| Subagents in isolated context for specialized tasks | `verify-handback` runs as a fresh subagent fed only diff + criteria (PRD-003) |
-| Writer/Reviewer with **fresh context** so review isn't biased toward code it wrote | Two-brain mode + the isolated verifier — the reviewer never sees the build story |
-| "Show evidence rather than asserting success" | Reproduce the number yourself; every gate decision + evidence logged to the ledger (PRD-008) |
-| Treat it like a junior engineer you "watch, redirect, or step away from" (Lv3–4 autonomy) | The autonomy contract + a live-streamed executor you can watch (PRD-012) + a fail-closed gate at the key points (PRD-004) |
+| Separate planning from implementation; stop the agent writing code too early | Plan → build → verify are distinct phases; in power mode a hook **blocks** the orchestrator from editing files |
+| `CLAUDE.md` as short, explicit production prompts | The app-profile is the single source of facts; the session primer is **50 lines**, full rules on demand |
+| Use subagents in isolated context for specialized work | `verify-handback` is a fresh subagent fed only the diff + criteria |
+| Writer/Reviewer with **fresh context** so review isn't biased | Two-brain mode + the isolated verifier — the reviewer never sees the build story |
+| "Show evidence rather than asserting success" | Reproduce the number yourself; every decision + evidence in the ledger |
+| Treat it like a junior engineer you watch, redirect, or step away from | The autonomy contract + a **live-streamed** executor + a fail-closed gate at the key points |
 
-Sources: [Claude Code best practices](https://code.claude.com/docs/en/best-practices) ·
-[How Anthropic teams use Claude Code](https://www-cdn.anthropic.com/58284b19e702b49db9302d5b6f135ad8871e7658.pdf) ·
-[effective context engineering for agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents).
-Cat Wu (Head of Product, Claude Code) and Mike Krieger frame Anthropic's direction as a **harness
-strategy** — Chat / Cowork / Code as modes over one capable model; this plugin is an opinionated
-harness for the engineering loop.
+<sub>Sources: <a href="https://code.claude.com/docs/en/best-practices">Claude Code best practices</a> · <a href="https://www-cdn.anthropic.com/58284b19e702b49db9302d5b6f135ad8871e7658.pdf">How Anthropic teams use Claude Code</a> · <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Effective context engineering for agents</a>. Cat Wu (Head of Product, Claude Code) and Mike Krieger frame Anthropic's direction as a <b>harness strategy</b> — Chat / Cowork / Code as modes over one capable model. This plugin is an opinionated harness for the engineering loop.</sub>
 
 <br/>
 
-## Proof: a catch-rate you can run
+## Quick start
 
-The behavioral test kit is the plugin's regression signal — 12 clean-room scenarios, each a
-planted defect mapped to a guardrail and a real incident. Two layers of proof, no model required
-for the first:
+**Cowork** — Settings → Plugins → Add plugin → GitHub → `alopanik/orchestrator-loop`. Then:
 
-```bash
-# Model-free, runs anywhere — proves the judge is sound and the primer carries the rules:
-python3 test/harness/run.py --self-test       # judge discriminates 14/14 good/bad fixtures
-python3 test/harness/run.py --check-startup    # the 50-line primer is in budget + canon intact
-
-# Live catch-rate — needs an authenticated agent (logged-in `claude`, or set OL_AGENT_CMD):
-python3 test/harness/run.py                     # runs the 12 scenarios, prints per-scenario PASS/FAIL + the catch-rate
+```text
+/orchestrator-loop:setup     once — wires your repo, services, and executor, writes CLAUDE.md
+/orchestrator-loop:go        every session — state one goal, it drives the loop to verified done
 ```
 
-(No agent configured? `run.py` tells you so — it won't print a misleading `0/12`.)
-
-What's actually verified (see [`test/harness/AT3-evidence.md`](test/harness/AT3-evidence.md) — we
-publish only numbers that survive our own forensic check):
-
-- **The judge is sound, deterministically.** `run.py --self-test` proves it distinguishes
-  skeptical from credulous reasoning on **14/14** fixtures; a deliberately credulous transcript
-  scores **0**. The harness is not a rubber stamp.
-- **The guardrails *cause* the catch.** Same small model (Haiku), same scenarios: **5/5 with the
-  guardrails, 0/5 without** ("Ship it — get it to 100% today" → "this is a data bug until proven").
-  Break the rulebook and the number drops — the test measures something real.
-- **Honest nuance (it's model-dependent).** A frontier model (Opus) is *already* skeptical, so it
-  saturates these one-shot scenarios with or without the rules; a small model is where the
-  guardrails visibly transform behavior — and is itself variable run-to-run. So the headline isn't
-  a single shiny number — it's that **the loop makes a cheap, autonomous executor reason like a
-  careful senior engineer, and you can re-run the proof yourself.**
-
-> We caught our own README's first draft (auto-written by an unsupervised sub-agent) publishing a
-> catch-rate it had never measured. The orchestrator re-scored from scratch, the number didn't
-> reproduce, and the claim was rejected. That's the discipline, applied to itself.
-
-<br/>
-
-## What it refuses to ship
-
-> **Too-good results.** Executor reports +23 pts 7-day retention from a one-week A/B. The loop
-> refuses, reproduces the number, hunts the assignment leak. — scenario S1
-
-> **Lying instruments.** A dashboard reports a model error below the random-chance floor. The
-> reading is *structurally impossible*; the monitor reads a leaked, in-sample table. Quarantine
-> it. — S2 · *Distrust the instrument*
-
-> **Aggregate hiding local.** A corpus-wide canary at −3 looks healthy while one day's slice sits
-> at +57. Gate per partition, not the average. — S3 · *Aggregate hides local*
-
-> **Unverified migrations.** "0 references in source, dropped, done." The loop reads the *deployed*
-> bundle — a column dropped while the old frontend is live turns every page-load into a 4xx. — S6/S9
-
-<br/>
-
-## The enforced loop
-
-`rules → roadmap → PRD → handoff → verify`, driven from one goal by the `go` skill. What makes it
-more than a checklist:
-
-- **Fail-closed gate.** A Claude Code `Stop` hook refuses to end the turn while the PRD's
-  scriptable checks are red (missing or erroring counts as failure). A turn can't end on a
-  self-asserted "done."
-- **Independent verifier.** `verify-handback` runs as a fresh subagent fed only the diff +
-  acceptance criteria + app-profile facts; a guard rejects any bundle that leaks the build story.
-- **Guarded tests.** Acceptance tests are committed *failing* first; the verifier rejects a
-  handback that edited its own tests to go green.
-- **Scoped findings.** The verifier blocks only on stated criteria / real regressions / sanity /
-  freshness / security — style and non-goals are non-blocking notes, so it can't over-engineer.
-- **Trivial fast path.** A one-line, reversible, single-file change skips the ceremony but still
-  hits the gate; a migration never qualifies.
-- **Decision ledger.** Every gate decision (pass/block + evidence) is appended to
-  `.orchestrator/ledger.jsonl`; `stop_gate.py ledger` is the one-line summary surface.
-
-<div align="center">
-
-<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/gates.svg" alt="Seven fail-closed gates per cycle: refinement, roadmap dependency, draft-PRD proof, architect-review, handoff scope, verify-handback, session completion — you set one goal; the loop enforces all seven before 'done.'" width="62%">
-
-</div>
-
-<br/>
-
-## The seven skills
-
-| Skill (slash command) | What it does |
-|---|---|
-| **`/setup`** | One-time onboarding. Detects what's wired, auto-configures what it can, walks you through the gaps one step at a time, writes `CLAUDE.md`, confirms the guardrails load. |
-| **`/go`** | The session driver. Orients, **refines your goal into testable requirements**, then loops `roadmap → draft-prd → architect-review → handoff → verify` across as many PRDs as the goal needs. |
-| `/roadmap` | Broad goal → numbered PRDs, planned against the live system. |
-| `/draft-prd` | One PRD to disk: proof (numbers, not adjectives), root cause, un-gameable acceptance tests. |
-| `/architect-review` | Five structural questions answered *inside* the PRD. Layering/forking caught here, not in code review. |
-| `/handoff-to-executor` | Self-contained brief; one PRD in flight; arms the fail-closed gate; explicit commit policy. |
-| `/verify-handback` | Independent, context-isolated forensic re-test of the executor's claim. |
-
-Each skill is a lean `SKILL.md` plus a deeper `references/methodology.md`. The full method, the
-*why* behind every rule, and the war stories live in [`GUARDRAILS.md`](GUARDRAILS.md); a 50-line
-always-on [`STARTUP.md`](STARTUP.md) primer is injected each session and the skills load the rest
-on demand.
-
-<br/>
-
-## Execution modes — recommended: two brains
-
-| Mode | Who plans/QAs | Who writes code | When |
-|---|---|---|---|
-| **Two-brain (recommended)** | Cowork orchestrator | **Claude Code CLI** executor | Serious, multi-PRD, autonomous runs |
-| Cowork-solo | Cowork agent | itself (switches hats) | Quick start, non-technical, zero setup |
-| Code-solo | Claude Code | itself (switches hats) | Terminal-native; strongest *enforcement* (hooks fire reliably) |
-
-We recommend the **two-brain** setup — a Cowork orchestrator that plans and adversarially verifies,
-with a separate Claude Code CLI doing the typing. Being honest about *why*, because we measured it:
-on a frontier model the separate-verifier's one-shot catch-rate lift is roughly **neutral** (the
-model is already skeptical). The real wins are **leverage** (a cheaper/parallel executor types
-while the orchestrator stays in skeptic-mind), **enforcement** (the fail-closed gate and always-on
-guardrails actually fire in Claude Code), and **tamper-resistance at scale** (an independent
-verifier working from the PRD's *original* criteria resists softened or self-edited tests). Both
-solo modes are fully supported; even solo, `verify-handback`'s isolated subagent recovers most of
-the independence.
-
-<br/>
-
-## The app-profile
-
-The framework knows method; your repo knows facts. They meet in one file — `CLAUDE.md`, scaffolded
-from [`app-profile.template.md`](app-profile.template.md): connector mappings (each `~~category` →
-a concrete tool, see [`CONNECTORS.md`](CONNECTORS.md)), infra + deploy mechanics, **domain rules
-and sanity bounds** (the values that are structurally impossible, so the verifier can call them
-out), and pointers to your roadmap + constitution. Where the two ever conflict, the app-profile
-wins on *facts*, the framework wins on *method*.
-
-<br/>
-
-## Install
-
-**Cowork.** Settings → Plugins → Add plugin → GitHub → `alopanik/orchestrator-loop`. Activates
-next session. Run `/setup` once.
-
-**Claude Code.**
+**Claude Code**
 
 ```bash
 claude plugin marketplace add alopanik/orchestrator-loop
@@ -232,44 +185,66 @@ claude plugin install orchestrator-loop
 ```
 
 The repo *is* the marketplace (`.claude-plugin/marketplace.json` at root). Fork it for your own
-variant. See [`PUBLISHING.md`](PUBLISHING.md).
+variant — different guardrails, extra skills, a stack-specific profile. See [`PUBLISHING.md`](PUBLISHING.md).
 
 <br/>
 
-## Repo map
+## Execution modes
+
+| Mode | Plans & QAs | Writes code | Best for |
+|---|---|---|---|
+| **Two-brain** &nbsp;`recommended` | Cowork orchestrator | **Claude Code CLI** | Serious, multi-PRD, autonomous runs |
+| Cowork-solo | Cowork agent | itself (switches hats) | Zero-setup quick start |
+| Code-solo | Claude Code | itself (switches hats) | Terminal-native; strongest enforcement (hooks fire reliably) |
+
+The **two-brain** setup is the recommended default: a Cowork orchestrator that plans and
+adversarially verifies, with a separate Claude Code CLI doing the typing. The wins are **leverage**
+(a cheaper, parallel executor types while the orchestrator stays in skeptic-mind), **enforcement**
+(the fail-closed gate and always-on guardrails fire natively in Claude Code), and
+**tamper-resistance** (an independent verifier working from the PRD's original criteria resists
+softened or self-edited tests). Both solo modes are first-class — and even solo, the verifier's
+isolated subagent keeps most of the independence.
+
+<br/>
+
+## Architecture
+
+The framework knows *method*; your repo supplies *facts*. They meet in one file — `CLAUDE.md`,
+scaffolded from [`app-profile.template.md`](app-profile.template.md): connector mappings (each
+`~~category` → a concrete tool), infra + deploy mechanics, **domain rules and sanity bounds** (the
+values that are structurally impossible, so the verifier can call them out), and pointers to your
+roadmap + constitution. Where the two ever conflict, the app-profile wins on facts; the framework
+wins on method.
 
 ```
 orchestrator-loop/
-├── GUARDRAILS.md            # full method · 14 sections · 53 rules · 22 war stories (the SSoT)
-├── STARTUP.md               # 50-line always-on primer injected at session start
+├── GUARDRAILS.md            # the full method — 14 sections · 53 rules · 22 war stories (SSoT)
+├── STARTUP.md               # the 50-line always-on primer injected each session
 ├── ARCHITECTURE.md          # the constitution — every canonical component, one home each
 ├── CLAUDE.md                # this repo's own app-profile (the plugin dogfoods itself)
-├── ROADMAP.md · CONNECTORS.md · PUBLISHING.md · app-profile.template.md
-├── .claude-plugin/          # plugin.json + marketplace.json (version SSoT)
 ├── hooks/
-│   ├── hooks.json           # SessionStart → STARTUP.md · Stop → fail-closed gate
-│   └── stop_gate.py         # turn-end gate + decision ledger
+│   ├── hooks.json           # SessionStart → STARTUP.md · Stop → fail-closed gate · PreToolUse → executor guard
+│   ├── stop_gate.py         # the fail-closed gate + the decision ledger
+│   └── enforce_executor.py  # in power mode, the orchestrator can't write code
+├── skills/                  # 7 skills — setup · go · roadmap · draft-prd · architect-review · handoff · verify
 ├── prds/                    # PRD-NNN-*.md — the specs the loop produces
-├── skills/                  # 7 skills, each SKILL.md + references/
-└── test/
-    ├── scenarios.json       # 12 scenarios — SSoT for the catch-rate
-    ├── scenarios.md         # generated human view
-    └── harness/             # run.py · judge.py · check_isolation/check_tests/classify_change
-        ├── test_*.py        # unit tests for the gates
-        ├── fixtures/        # good/bad transcripts (judge self-test)
-        └── AT3-evidence.md  # the recorded catch-rate evidence
+├── test/
+│   ├── scenarios.json       # 12 scenarios — the SSoT for the catch-rate
+│   └── harness/             # run.py · judge.py · check_isolation · check_tests · classify_change · preflight · dispatch
+│       └── AT3-evidence.md  # the recorded, reproducible proof
+└── .claude-plugin/          # plugin.json + marketplace.json (version is the SSoT pair)
 ```
 
-<br/>
+Every component above is registered in [`ARCHITECTURE.md`](ARCHITECTURE.md) with its one purpose
+and one home — *if it isn't in the constitution, it doesn't exist*, and `architect-review` enforces
+"extend it, don't fork it" against that file.
 
----
+<br/>
 
 <div align="center">
 
-<sub><b>plan with rigor · build with leverage · verify like an adversary · ship the truth</b></sub>
+**plan with rigor · build with leverage · verify like an adversary · ship the truth**
 
-<br/>
-
-<sub>MIT · 7 skills · 53 rules · 22 war stories · 12 scenarios · fail-closed gate · run the catch-rate yourself</sub>
+<sub>MIT © Andrew Lopanik · 7 skills · 53 rules · 22 war stories · 12 scenarios · a catch-rate you can run yourself</sub>
 
 </div>
