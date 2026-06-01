@@ -60,13 +60,13 @@ credential, a real fork); or you stop it.
 
 | Skill (slash command) | What it does |
 |---|---|
-| **`/orchestrator-loop:setup`** | One-time onboarding. Detects what's already wired in the repo, auto-configures what it can, walks the user one step at a time through the gaps, writes `CLAUDE.md` from the app-profile template, confirms the guardrails hook is loaded. |
-| **`/orchestrator-loop:go`** | The session driver. Orients on app-profile + roadmap + live state, refines the user's goal, then loops `roadmap → draft-prd → architect-review → handoff → verify` across as many PRDs as the goal needs. |
-| `/orchestrator-loop:roadmap` | Broad goal → numbered PRDs. Plans against the live system, not assumptions. |
-| `/orchestrator-loop:draft-prd` | Writes one PRD to disk as `PRD-NNN-short-kebab.md`. House format: proof (numbers, not adjectives), root cause, un-gameable acceptance tests. |
-| `/orchestrator-loop:architect-review` | Five structural questions answered inside the PRD. Layering and forking caught here, not in code review. |
-| `/orchestrator-loop:handoff-to-executor` | Self-contained brief; one PRD in flight; explicit commit policy every time. |
-| `/orchestrator-loop:verify-handback` | Independent forensic re-test of the executor's claim. 5 forensic checks + 3 signals + per-partition + freshness. |
+| **`/setup`** | One-time onboarding. Detects what's already wired in the repo, auto-configures what it can, walks the user one step at a time through the gaps, writes `CLAUDE.md` from the app-profile template, confirms the guardrails hook is loaded. |
+| **`/go`** | The session driver. Orients on app-profile + roadmap + live state, refines the user's goal, then loops `roadmap → draft-prd → architect-review → handoff → verify` across as many PRDs as the goal needs. |
+| `/roadmap` | Broad goal → numbered PRDs. Plans against the live system, not assumptions. |
+| `/draft-prd` | Writes one PRD to disk as `PRD-NNN-short-kebab.md`. House format: proof (numbers, not adjectives), root cause, un-gameable acceptance tests. |
+| `/architect-review` | Five structural questions answered inside the PRD. Layering and forking caught here, not in code review. |
+| `/handoff-to-executor` | Self-contained brief; one PRD in flight; explicit commit policy every time. |
+| `/verify-handback` | Independent forensic re-test of the executor's claim. 5 forensic checks + 3 signals + per-partition + freshness. |
 
 Each skill has a lean `SKILL.md` plus a deeper `references/methodology.md` next to it.
 
@@ -152,21 +152,21 @@ verifier role still runs adversarially against the planner role's claim.
 
 ## How you use it
 
-**First time in a repo.** Run `/orchestrator-loop:setup`. It detects existing
+**First time in a repo.** Run `/setup`. It detects existing
 structure, fills what it can, asks you one question at a time for the gaps, and writes
 `CLAUDE.md`. After this, the SessionStart hook cats `GUARDRAILS.md` into context every
 session — the rules are *always* in effect, not opt-in.
 
-**Day to day.** Every session is `/orchestrator-loop:go` with a one-line goal. The
+**Day to day.** Every session is `/go` with a one-line goal. The
 framework probes, plans, drafts, reviews, dispatches, verifies, and re-enters the loop
 for the next PRD. You answer clarifying questions during refinement; otherwise it
 drives itself until the goal is verifiably met.
 
 **Direct invocations** when you don't want the full loop:
 
-- `/orchestrator-loop:draft-prd` — write a single PRD against an existing roadmap entry.
-- `/orchestrator-loop:architect-review` — review an already-drafted PRD before handoff.
-- `/orchestrator-loop:verify-handback` — re-verify an already-shipped change against
+- `/draft-prd` — write a single PRD against an existing roadmap entry.
+- `/architect-review` — review an already-drafted PRD before handoff.
+- `/verify-handback` — re-verify an already-shipped change against
   reality (useful when a result feels too clean).
 
 <br/>
@@ -174,7 +174,7 @@ drives itself until the goal is verifiably met.
 ## Install
 
 **Cowork.** Settings → Plugins → Add plugin → GitHub → `alopanik/orchestrator-loop`.
-Activates next session. Run `/orchestrator-loop:setup` once.
+Activates next session. Run `/setup` once.
 
 **Claude Code.**
 
