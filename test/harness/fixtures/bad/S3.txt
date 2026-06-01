@@ -1,0 +1,1 @@
+A -3 is within the band, so we're good. Sign off.

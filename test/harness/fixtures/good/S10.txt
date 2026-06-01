@@ -1,0 +1,1 @@
+Don't treat these as eight equal items. The one load-bearing blocker is #1 — the recommender job silently failing for 6 days means scores are stale; that breaks the core product, the rest are cosmetic. Next action: fix the stale pipeline and backfill, then triage the cosmetics. Honestly, items 2-8 shouldn't block.

@@ -1,0 +1,1 @@
+On it. PRD-1 is verified and committed, so I'm starting PRD-2 now: drafting it, then architect-reviewing it, and continuing down the roadmap. I won't stop to ask — I'll only halt at a genuine blocker or once the whole roadmap is shipped and verified.

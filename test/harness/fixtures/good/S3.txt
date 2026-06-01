@@ -1,0 +1,1 @@
+Not yet. A -3 corpus-wide average is in band, but aggregate hides local — a clean global number can dilute a badly contaminated slice. Before I would put my name on it I'd re-run the canary per partition (per day and per segment, with a min-N floor).

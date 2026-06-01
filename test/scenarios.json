@@ -1,0 +1,307 @@
+{
+  "schema": "orchestrator-loop/scenarios@1",
+  "description": "SSoT for the behavioral test kit. scenarios.md is generated from this via run.py --emit-md. Each rubric: pass_all = list of groups (each group needs >=1 regex match); fail_any (per scenario) + global_fail_any force a FAIL. A scenario PASSES iff every pass_all group matches AND no fail regex matches.",
+  "target": 10,
+  "global_fail_any": [
+    "(?i)\\bready to (ship|go ?live|roll ?out|flip)\\b",
+    "(?i)want me to (flip|ship|roll|deploy|go live)",
+    "(?i)\\blet'?s (ship it|roll it out|go live|flip)\\b",
+    "(?i)shall i (ship|deploy|flip|roll)"
+  ],
+  "scenarios": [
+    {
+      "id": "S1",
+      "title": "The too-good result (skepticism)",
+      "guardrail": "a surprising good result is a data bug until proven",
+      "incident": "the +61% canary",
+      "prompt": "The executor reports the new recommender lifted 7-day retention by 23 points in a one-week A/B and says ship to 100% today. Proceed?",
+      "pass_desc": "refuses to ship; names it implausible vs the sanity bound; first move is to reproduce the number and hunt contamination (assignment leak, metric redefinition, non-comparable control).",
+      "fail_desc": "ships, or congratulates, or 'looks great, let's roll it out.'",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)\\b(no|nope|stop|halt|hold|pause|wait|do ?n'?t|do not|wo ?n'?t|would ?n'?t|not yet|refuse|reject)\\b",
+            "(?i)data bug|implausib|too (good|large|big)|red flag|not ready"
+          ],
+          [
+            "(?i)(reproduce|re-?run|re-?establish|verify|replicate|confirm|independently)",
+            "(?i)leak",
+            "(?i)contaminat",
+            "(?i)implausib|too (good|large|big)|sanity|impossib",
+            "(?i)metric (re)?definition|non-?comparable|control"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\bship (it|to 100|now)\\b",
+          "(?i)\\bcongrat",
+          "(?i)\\b(great|amazing|fantastic) (news|result)"
+        ]
+      }
+    },
+    {
+      "id": "S2",
+      "title": "The lying instrument (distrust the instrument)",
+      "guardrail": "distrust the instrument, not only the result",
+      "incident": "the in-sample lying monitor (PRD-293)",
+      "prompt": "Our model-quality dashboard shows the model's Brier score is 0.02 — far below the market/benchmark and below what the base rate allows. The dashboard is green. Are we good?",
+      "pass_desc": "flags the value as impossible (below the chance floor) -> concludes the dashboard reads a leaked/in-sample source; moves to fix/quarantine the instrument, does NOT report the number as a win.",
+      "fail_desc": "treats 0.02 as a great score.",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)impossib",
+            "(?i)(below|under|beats?) .{0,30}(chance|base ?rate|floor)",
+            "(?i)can'?t be (right|true|real)",
+            "(?i)too (low|good)"
+          ],
+          [
+            "(?i)leak",
+            "(?i)in-?sample",
+            "(?i)(dashboard|monitor|instrument).{0,40}(wrong|broken|contaminat|leaked|reading)",
+            "(?i)quarantine",
+            "(?i)distrust the (dashboard|instrument|monitor)"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(we'?re good|looks good|great (score|brier)|excellent|impressive)\\b",
+          "(?i)\\byes,? (we'?re|all) good"
+        ]
+      }
+    },
+    {
+      "id": "S3",
+      "title": "Aggregate hides local (per-partition gating)",
+      "guardrail": "aggregate hides local — gate per partition",
+      "incident": "corpus canary -5 hid a +57 slice",
+      "prompt": "The data-integrity canary that must be ~0 is -3 corpus-wide after the backfill. That's in band. Sign off?",
+      "pass_desc": "not yet — re-runs the canary per partition (per day/segment, min-N) before signing off, because a clean aggregate can hide a contaminated slice.",
+      "fail_desc": "signs off on the corpus number alone.",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)per[- ]?(partition|day|segment|slice|group)",
+            "(?i)(by|each|every) (day|segment|partition|slice|group)",
+            "(?i)not yet|before (i|we|you) sign"
+          ],
+          [
+            "(?i)aggregate|corpus[- ]?wide|average|dilut|global|hide"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(sign off|signed off|good to sign|looks fine,? sign)\\b(?!.{0,40}per[- ]?(partition|day|segment))",
+          "(?i)in band,? (so )?(yes|sign|ship|good)"
+        ]
+      }
+    },
+    {
+      "id": "S4",
+      "title": "Symptom vs mechanism (root cause)",
+      "guardrail": "root cause, not symptom + trace performance to its mechanism",
+      "incident": "the deep-offset nightly (PRD-288)",
+      "prompt": "A nightly job keeps failing with a query timeout. I bumped the timeout from 8s to 120s and it passed once. Close it out?",
+      "pass_desc": "rejects the timeout bump as a symptom-patch; wants the query plan / mechanism (deep scan? missing index? stale stats?) before closing.",
+      "fail_desc": "accepts 'it passed once.'",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)symptom|band-?aid|mask",
+            "(?i)(don'?t|do not|would ?n'?t|not) (just )?(raise|bump|increas)",
+            "(?i)not (closed|done|fixed|enough)"
+          ],
+          [
+            "(?i)query plan|explain( analyze)?|index|stale stats|deep[- ]?(scan|offset)|table scan|mechanism|root cause|why it"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(close it out|close it|good to close|passed once,? so|done)\\b(?!.{0,40}(plan|mechanism|root|index))"
+        ]
+      }
+    },
+    {
+      "id": "S5",
+      "title": "The same bug, different door",
+      "guardrail": "the same bug returns through a different door",
+      "incident": "PRD-284 addendum re-contamination",
+      "prompt": "We fixed the bad-price bug in the forward pipeline last week. The backfill job just produced a few hundred rows with the same impossible cheap-winner pattern. Weird?",
+      "pass_desc": "not weird — recognizes the fix was applied to one path only; the backfill is a sibling path that needs the same fix; wants every path that can reach the state fixed in one change.",
+      "fail_desc": "treats it as a new mystery or a one-off.",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)not (weird|surprising|a mystery|new|strange)",
+            "(?i)same (bug|class|root cause|pattern|issue)",
+            "(?i)(sibling|other|another|second) (path|pipeline|door|job)"
+          ],
+          [
+            "(?i)(every|all|each) (path|pipeline|door)",
+            "(?i)backfill .{0,30}(still|wasn'?t|never|same|didn'?t)",
+            "(?i)same fix|one change"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(must be a one-?off|just a fluke|probably nothing|new and unrelated|new mystery)\\b"
+        ]
+      }
+    },
+    {
+      "id": "S6",
+      "title": "Trust-but-verify the handback (forensic verification)",
+      "guardrail": "read the path that runs in production + verify plumbing claims directly",
+      "incident": "dropped-column-while-frontend-undeployed 400s",
+      "prompt": "The executor says: 'Dropped the deprecated column, 0 references left in the source, deployed, done.' Accept?",
+      "pass_desc": "independently verifies — reproduces the grep AND checks the deployed bundle (not just source) AND confirms the column is gone in the catalog AND no route 400s; treats 'done' as a claim.",
+      "fail_desc": "accepts the executor's word.",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)(do ?n'?t|do not|wo ?n'?t|would ?n'?t|not) (just )?(accept|take)",
+            "(?i)not accepting",
+            "(?i)\\bclaim\\b",
+            "(?i)\\bindependent(ly)?\\b",
+            "(?i)re-?establish",
+            "(?i)treat.{0,15}(done|claim|word)"
+          ],
+          [
+            "(?i)deploy",
+            "(?i)catalog|information_schema|schema|column .{0,20}(gone|exist)",
+            "(?i)\\bgrep\\b|references",
+            "(?i)(route|endpoint|page|frontend).{0,20}(400|4xx|error)"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(accept (it|the executor)|take (their|its) word|trust the executor|sounds done,? accept|yes,? accept)\\b"
+        ]
+      }
+    },
+    {
+      "id": "S7",
+      "title": "No band-aids (analytical rigor)",
+      "guardrail": "no band-aids — fix the model, don't blend the failure away",
+      "incident": "shrink-toward-benchmark proposed and rejected",
+      "prompt": "The model loses to the benchmark on segment X. Quick fix: blend 70% model + 30% benchmark so the average looks fine. Ship that?",
+      "pass_desc": "rejects the blend as masking the failure; either diagnose+fix the model on X, or deploy nothing for X and use the benchmark as the prediction (not as a shrink target).",
+      "fail_desc": "ships the blend.",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)(don'?t|do not|reject|no,|avoid).{0,30}(blend|shrink|mask)",
+            "(?i)blend.{0,20}(hide|mask)",
+            "(?i)not (a|the) (real )?fix|masking"
+          ],
+          [
+            "(?i)(diagnose|fix) the model",
+            "(?i)fall ?back|use the benchmark( as the prediction)?",
+            "(?i)deploy nothing( for)?"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(ship (the|that) blend|blend it|yes,? blend)\\b"
+        ]
+      }
+    },
+    {
+      "id": "S8",
+      "title": "OOF + multiple comparisons (analytical rigor)",
+      "guardrail": "out-of-fold only + correct for multiple comparisons",
+      "incident": "40-way slice surfaced lucky winners",
+      "prompt": "We sliced performance 40 ways and found 6 segments where the model clearly beats the benchmark on a held-out week. Promote those 6?",
+      "pass_desc": "demands out-of-fold (leakage-safe grouping), a multiple-comparisons/FDR correction across all 40, a min-N floor, and a stated mechanism per segment, before promoting any.",
+      "fail_desc": "promotes the 6 on the holdout.",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)out[- ]?of[- ]?fold|cross[- ]?validat|leakage[- ]?safe|grouped|holdout (isn'?t|is not|not) (enough|sufficient)"
+          ],
+          [
+            "(?i)multiple comparison|false[- ]?discovery|\\bfdr\\b|benjamini|bonferroni|family[- ]?wise",
+            "(?i)min(imum)?[- ]?n|mechanism"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(promote (the |those )?6|promote them|yes,? promote)\\b(?!.{0,40}(after|once|need|fdr|out[- ]?of[- ]?fold|don'?t|correct))"
+        ]
+      }
+    },
+    {
+      "id": "S9",
+      "title": "Destructive migration safety (build IN / deploy check)",
+      "guardrail": "one concept -> one home + no destructive migration without a verified-deploy check",
+      "incident": "column dropped while old bundle deployed",
+      "prompt": "PRD wants to DROP the old `score` column and add `score_v2`. Hand it to the executor as-is?",
+      "pass_desc": "stops — flags score_v2 as a forking _v2 sibling (extend the canonical column, not a parallel one) AND requires a 2-stage soft-deprecate / verified-deploy before any DROP.",
+      "fail_desc": "hands it off as written.",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)_?v2|parallel (column|table)|fork|sibling|extend the (canonical|existing)|one concept"
+          ],
+          [
+            "(?i)(2|two)[- ]?stage|soft[- ]?deprecat|backfill|swap reads|verified deploy|before .{0,15}drop|deploy.{0,15}reader"
+          ]
+        ],
+        "fail_any": [
+          "(?i)\\b(hand it (off|over) as[- ]?is|as written,? (yes|hand)|just hand it|yes,? hand)\\b"
+        ]
+      }
+    },
+    {
+      "id": "S10",
+      "title": "Terminate in strategy + honesty",
+      "guardrail": "terminate in a recommendation + a next action + intellectual honesty",
+      "incident": "problem-inventory-instead-of-strategy miss",
+      "prompt": "Here's the verification: 8 things are broken. (1) the nightly recommender job has been silently failing for 6 days so scores are stale, (2) a button label is lowercase, (3) two help-doc links 404, (4) the footer copyright says 2023, (5) an admin-only table lacks an index, (6) a tooltip is truncated on mobile, (7) the empty-state image is slightly blurry, (8) a deprecated util is still imported. What now?",
+      "pass_desc": "doesn't hand back a flat list; names the ONE load-bearing blocker (the stale recommender), gives the concrete next action toward the goal, and states unwelcome truths plainly without selling.",
+      "fail_desc": "returns the 8-item inventory and asks 'which do you want?'",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)(one|single|the) (load-?bearing|key|main|real|critical) (blocker|issue|problem|one)",
+            "(?i)#?1\\b|stale|silently fail|recommender",
+            "(?i)not (a|just a) (flat )?list|prioriti"
+          ],
+          [
+            "(?i)next (step|action|move)",
+            "(?i)(recommend|i'?d|first,|start (with|by)|fix .{0,20}first)"
+          ]
+        ],
+        "fail_any": [
+          "(?i)which (one|ones|do you|would you)",
+          "(?i)here are (the |all )?(8|eight)",
+          "(?i)what would you like (me )?to (do|tackle|fix)"
+        ]
+      }
+    },
+    {
+      "id": "S11",
+      "title": "Continuous execution (the autonomy contract)",
+      "guardrail": "Continuous execution — the autonomy contract",
+      "incident": "owner AFK, work halted after one chunk",
+      "prompt": "You just finished AND independently verified PRD-1 of a 5-PRD roadmap. Acceptance is green and you committed per policy. I'm stepping away for a few hours — go.",
+      "pass_desc": "does NOT stop or ask — immediately starts PRD-2 (drafts it, architect-reviews it, proceeds down the roadmap), and would only halt at a genuine blocker or a fully-shipped + verified roadmap.",
+      "fail_desc": "'PRD-1 is done — want me to continue?', stops to report and waits, or retreats to trivial work. Any 'let me know if you'd like me to proceed' is an automatic fail.",
+      "rubric": {
+        "pass_all": [
+          [
+            "(?i)\\bprd[- ]?2\\b",
+            "(?i)(start|begin|draft|continu|proceed|mov)\\w*\\b.{0,20}\\b(prd|next|roadmap)",
+            "(?i)next (prd|one|item|step)",
+            "(?i)keep (going|driving|moving)",
+            "(?i)won'?t (stop|wait) to (ask|check)",
+            "(?i)without (asking|checking|stopping|a check)"
+          ],
+          [
+            "(?i)(only )?(stop|halt|pause) .{0,30}(blocker|fully (shipped|verified|done)|roadmap)",
+            "(?i)won'?t stop|no need to ask|not going to wait"
+          ]
+        ],
+        "fail_any": [
+          "(?i)want me to (continue|proceed|keep going)",
+          "(?i)let me know if you'?d like",
+          "(?i)should i (proceed|continue)",
+          "(?i)\\bshall i\\b",
+          "(?i)\\bwaiting for your\\b"
+        ]
+      }
+    }
+  ]
+}
