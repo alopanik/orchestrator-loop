@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 860" role="img" aria-label="Seven gates per cycle: refinement, roadmap dependency, draft-PRD proof, architect-review, handoff scope, verify-handback, session completion. You set one goal; the loop enforces seven checkpoints before 'done.'">
+  <defs>
+    <marker id="g-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="#6e7681"/>
+    </marker>
+    <marker id="g-done" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 1 L9 5 L0 9 z" fill="#3fb950"/>
+    </marker>
+  </defs>
+
+  <style>
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .sans { font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  </style>
+
+  <!-- frame -->
+  <rect x="0" y="0" width="400" height="860" rx="14" fill="#0d1117"/>
+  <rect x="0.5" y="0.5" width="399" height="859" rx="13.5" fill="none" stroke="#21262d" stroke-width="1"/>
+
+  <!-- header -->
+  <text class="mono" x="32" y="46" font-size="12" letter-spacing="1.6" fill="#6e7681">SEVEN GATES</text>
+  <text class="sans" x="32" y="80" font-size="22" font-weight="700" fill="#e6edf3">You set one goal.</text>
+  <text class="sans" x="32" y="108" font-size="22" font-weight="700" fill="#e6edf3">The loop enforces seven.</text>
+
+  <!-- top: input -->
+  <rect x="100" y="148" width="200" height="44" rx="11" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+  <text class="sans" x="200" y="176" text-anchor="middle" font-size="15" font-weight="700" fill="#79c0ff">you state ONE goal</text>
+
+  <!-- spine -->
+  <line x1="64" y1="200" x2="64" y2="784" stroke="#30363d" stroke-width="1.5"/>
+
+  <!-- 7 gate rows. Centers at y = 230, 310, 390, 470, 550, 630, 710 -->
+  <!-- Gate template: numbered circle on spine, title + caption to the right -->
+
+  <!-- 1 refinement -->
+  <circle cx="64" cy="230" r="22" fill="#161b22" stroke="#f78166" stroke-width="2.25"/>
+  <text class="mono" x="64" y="237" text-anchor="middle" font-size="16" font-weight="700" fill="#f78166">1</text>
+  <text class="sans" x="104" y="226" font-size="17" font-weight="700" fill="#e6edf3">refinement</text>
+  <text class="mono" x="104" y="246" font-size="12" fill="#8b949e">requirements covered?</text>
+
+  <!-- 2 roadmap dependency -->
+  <circle cx="64" cy="310" r="22" fill="#161b22" stroke="#f78166" stroke-width="2.25"/>
+  <text class="mono" x="64" y="317" text-anchor="middle" font-size="16" font-weight="700" fill="#f78166">2</text>
+  <text class="sans" x="104" y="306" font-size="17" font-weight="700" fill="#e6edf3">roadmap dependency</text>
+  <text class="mono" x="104" y="326" font-size="12" fill="#8b949e">lowest unblocked = next</text>
+
+  <!-- 3 draft-prd proof -->
+  <circle cx="64" cy="390" r="22" fill="#161b22" stroke="#f78166" stroke-width="2.25"/>
+  <text class="mono" x="64" y="397" text-anchor="middle" font-size="16" font-weight="700" fill="#f78166">3</text>
+  <text class="sans" x="104" y="386" font-size="17" font-weight="700" fill="#e6edf3">draft-PRD proof</text>
+  <text class="mono" x="104" y="406" font-size="12" fill="#8b949e">un-gameable acceptance</text>
+
+  <!-- 4 architect-review -->
+  <circle cx="64" cy="470" r="22" fill="#161b22" stroke="#f78166" stroke-width="2.25"/>
+  <text class="mono" x="64" y="477" text-anchor="middle" font-size="16" font-weight="700" fill="#f78166">4</text>
+  <text class="sans" x="104" y="466" font-size="17" font-weight="700" fill="#e6edf3">architect-review</text>
+  <text class="mono" x="104" y="486" font-size="12" fill="#8b949e">five structural questions</text>
+
+  <!-- 5 handoff scope -->
+  <circle cx="64" cy="550" r="22" fill="#161b22" stroke="#f78166" stroke-width="2.25"/>
+  <text class="mono" x="64" y="557" text-anchor="middle" font-size="16" font-weight="700" fill="#f78166">5</text>
+  <text class="sans" x="104" y="546" font-size="17" font-weight="700" fill="#e6edf3">handoff scope</text>
+  <text class="mono" x="104" y="566" font-size="12" fill="#8b949e">one PRD in flight</text>
+
+  <!-- 6 verify-handback -->
+  <circle cx="64" cy="630" r="22" fill="#161b22" stroke="#f78166" stroke-width="2.25"/>
+  <text class="mono" x="64" y="637" text-anchor="middle" font-size="16" font-weight="700" fill="#f78166">6</text>
+  <text class="sans" x="104" y="626" font-size="17" font-weight="700" fill="#e6edf3">verify-handback</text>
+  <text class="mono" x="104" y="646" font-size="12" fill="#8b949e">forensic, not box-ticking</text>
+
+  <!-- 7 session completion -->
+  <circle cx="64" cy="710" r="22" fill="#161b22" stroke="#f78166" stroke-width="2.25"/>
+  <text class="mono" x="64" y="717" text-anchor="middle" font-size="16" font-weight="700" fill="#f78166">7</text>
+  <text class="sans" x="104" y="706" font-size="17" font-weight="700" fill="#e6edf3">session completion</text>
+  <text class="mono" x="104" y="726" font-size="12" fill="#8b949e">goal met AND verified</text>
+
+  <!-- exit: verified done -->
+  <line x1="64" y1="732" x2="64" y2="788" stroke="#3fb950" stroke-width="1.75"/>
+  <rect x="42" y="788" width="316" height="42" rx="11" fill="#0f2d18" stroke="#3fb950" stroke-width="2"/>
+  <text class="sans" x="200" y="816" text-anchor="middle" font-size="15" font-weight="700" fill="#7ee2a8">verified done — verdict + next action</text>
+</svg>
