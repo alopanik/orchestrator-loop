@@ -69,10 +69,13 @@ them but the user clicks Connect. Record each concrete tool as it's confirmed.
 
 ## Step 4 — Write the app-profile
 
-Copy `app-profile.template.md` into the repo as `CLAUDE.md` and fill in from what was detected:
-the executor tier + connector mappings, infra, domain rules, **sanity bounds / impossible
-values**, and the constitution + roadmap pointers. Keep the very first line as the guardrails
-pointer (Step 5 depends on it).
+Use the skeleton bundled with THIS skill at `references/app-profile.skeleton.md` (it sits beside
+this file — no guessing at the plugin root). Read it, fill it in from what was detected — the
+executor tier + connector mappings, infra, domain rules, **sanity bounds / impossible values**,
+and the constitution + roadmap pointers — and write the result into the repo as `CLAUDE.md`. Keep
+the very first line as the guardrails pointer (Step 5 depends on it). (The plugin root also ships
+a fuller `app-profile.template.md` for reference, but the bundled skeleton is the source of truth
+for this step so setup never depends on a path outside the skill folder.)
 
 ## Step 5 — Confirm guardrail delivery
 
