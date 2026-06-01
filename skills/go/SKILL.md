@@ -2,19 +2,21 @@
 name: go
 description: >
   THE single entry point for an orchestrator-loop session. Orients on the project, sets ONE
-  session goal (definition of done), then autonomously drives the whole rules→roadmap→PRD→
-  handoff→verify loop across as many PRDs as the goal needs — looping until the goal is met and
-  independently verified. Use when the user says "go", "start", "run the roadmap", "continue",
+  session goal, REFINES it into fully-covered requirements (probing questions; garbage in,
+  garbage out), then autonomously drives the whole rules→roadmap→PRD→handoff→verify loop across
+  as many PRDs as the goal needs — looping until the goal is met and independently verified. Use
+  when the user says "go", "start", "run the roadmap", "continue",
   "pick up where we left off", "session goal: …", or invokes /orchestrator-loop:go. The user
   normally only ever needs this skill; it calls the six stage skills internally.
 ---
 
 # go — the session driver
 
-This is the one skill a user runs to start a session. They set ONE goal; you drive the entire
-loop to completion. Do not make them juggle the six stage skills — you invoke those internally.
-Operate under GUARDRAILS.md throughout, especially **Session-completion discipline**: the unit
-of completion is the GOAL, not a single PRD.
+This is the one skill a user runs to start a session. They set ONE goal; you **refine it into
+full requirements**, then drive the entire loop to completion. Do not make them juggle the six
+stage skills — you invoke those internally. Operate under GUARDRAILS.md throughout, especially
+**Refine before you drive** (garbage in, garbage out) and **Session-completion discipline** (the
+unit of completion is the GOAL, not a single PRD).
 
 > Full orientation checklist + a worked multi-PRD session: `references/driving.md`.
 
@@ -40,7 +42,37 @@ in something you just read, not recall.
   beats a perfect one later — proceed on the best reading and say so.
 - A good goal names an outcome and its proof (e.g. "X is live and verified by Y"), not a task.
 
-## 3. Drive the loop to completion
+## 3. Refine the goal into full requirements — BEFORE driving
+
+This gate is non-negotiable: **garbage in, garbage out.** An autonomous driver is most dangerous
+when it confidently builds the wrong thing from an under-specified goal. So before any PRD is
+drafted, run a short **refinement pass** that turns the one-line goal into requirements covered
+at *both* levels — and surface what you don't know rather than guessing it.
+
+- **Probe the unknowns.** Ask the user focused, batched questions to close the gaps that would
+  change what gets built — scope edges, the *integration surface* (where this must plug into the
+  existing app — routes, data model, who reads/writes it), success criteria + how each is
+  measured, non-goals, constraints, and the sanity bounds for any number that defines "done."
+  Prefer a few high-signal questions over an interrogation. (Use the host's structured-question
+  UI if available.)
+- **Cover every level.** Decompose until each requirement is concrete enough to write an
+  un-gameable acceptance test for — high-level outcomes *and* the low-level nuts and bolts
+  (schema, the exact surfaces, edge cases, failure modes, migration/deploy needs). A requirement
+  you can't yet test isn't refined enough.
+- **State assumptions; let the user correct cheaply.** For anything you must assume, write it
+  down explicitly so a wrong assumption is caught now, not after three PRDs.
+- **You may be abstract, and you may skip — deliberately.** If the goal is already crisp, or the
+  user says "just go / don't ask," compress this to a one-line restatement of the requirements
+  and proceed — but note that you skipped refinement, so a gap surfaced mid-drive is expected,
+  not a surprise. Skipping is a choice you name, not a step you silently drop.
+- **Output a brief requirements spec** (the definition of done, now itemized: every requirement
+  with its acceptance check + the integration points), confirmed with the user in one pass. THIS
+  becomes what the roadmap decomposes and every PRD's acceptance traces back to.
+
+Only with requirements fully covered do you proceed to drive. (The cost of a question now is one
+message; the cost of building the wrong thing is the whole session.)
+
+## 4. Drive the loop to completion
 
 Run continuously toward the goal, invoking the stage skills as internal steps:
 
@@ -56,7 +88,7 @@ the finish line.
 - **Carry the epistemics**: a surprising-good result is a data bug until reproduced; verify
   forensically; terminate each PRD in a verdict, not a problem list.
 
-## 4. Stop only on a real boundary
+## 5. Stop only on a real boundary
 
 End the session — and surface it plainly — only when one of these is true (see GUARDRAILS
 "Session-completion discipline"):

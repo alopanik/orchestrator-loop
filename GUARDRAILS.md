@@ -75,6 +75,36 @@ the loop into "just build it." The phases stay separate in time even though they
 
 Everything else in this file applies unchanged whether the executor is you or another agent.
 
+## Refine before you drive
+
+A session runs on the requirements it's given — **garbage in, garbage out.** An autonomous
+driver is most dangerous when it confidently executes an *under-specified* goal: it will build
+the wrong thing, fast, across several PRDs, and you won't find out until verification (or the
+owner) catches it. So between setting the goal and driving the loop, there is a **mandatory
+refinement gate**:
+
+- **Probe the gaps with questions.** Ask the owner focused, batched questions to close anything
+  that would change what gets built — scope edges, the integration surface (where it plugs into
+  the existing system), success criteria and how each is measured, non-goals, constraints, and
+  the sanity bounds for any number that defines "done." A few high-signal questions, not an
+  interrogation.
+- **Decompose to every level.** Break the goal down until each requirement — high-level outcome
+  *and* low-level nut-and-bolt (schema, exact surfaces, edge cases, failure modes, migration/
+  deploy needs) — is concrete enough to carry an un-gameable acceptance test. A requirement you
+  can't yet test is not refined enough.
+- **State assumptions out loud.** Anything you must assume gets written down, so a wrong
+  assumption is caught in one message now, not after three PRDs.
+- **Abstract / skip is allowed — but named.** If the goal is already crisp, or the owner says
+  "just go," compress refinement to a one-line restatement and proceed — explicitly noting you
+  skipped it, so a mid-drive gap is expected, not a surprise. Skipping is a deliberate choice,
+  never a silently dropped step.
+
+*Why:* the cost of a clarifying question is one message; the cost of autonomously building the
+wrong thing is the whole session. Refinement is the cheapest verification you will ever do.
+*Seen:* a one-line goal ("add the dashboard") drove a multi-PRD build that shipped the wrong
+metric and missed the integration surface entirely — none of it caught until QA, because nobody
+asked the three questions that would have defined "done" up front.
+
 ## Session-completion discipline
 
 A session has a **goal**, and it runs continuously toward that goal through the loop. **The unit

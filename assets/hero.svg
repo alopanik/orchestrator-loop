@@ -1,33 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 340" font-family="ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" role="img" aria-label="orchestrator-loop — plan, build, verify, repeat. One command: go.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" font-family="ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" role="img" aria-label="orchestrator-loop — set one goal; Claude plans, hands off the code, and verifies against reality. One command: go.">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b1020"/><stop offset="1" stop-color="#0e1116"/>
-    </linearGradient>
-    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#3b82f6"/><stop offset="0.5" stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/>
-    </linearGradient>
-    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>
+    <pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse">
+      <path d="M38 0H0V38" fill="none" stroke="#30363d" stroke-width="1" opacity="0.45"/>
+    </pattern>
   </defs>
 
-  <rect x="0" y="0" width="760" height="340" rx="22" fill="url(#bg)"/>
-  <rect x="1" y="1" width="758" height="338" rx="21" fill="none" stroke="#1e293b" stroke-width="2"/>
-  <ellipse cx="650" cy="60" rx="170" ry="95" fill="#6366f1" opacity="0.20" filter="url(#soft)"/>
-  <ellipse cx="120" cy="320" rx="160" ry="80" fill="#3b82f6" opacity="0.16" filter="url(#soft)"/>
+  <rect x="0" y="0" width="760" height="250" rx="14" fill="#0d1117"/>
+  <rect x="0" y="0" width="760" height="250" rx="14" fill="url(#grid)"/>
+  <rect x="0.75" y="0.75" width="758.5" height="248.5" rx="13.5" fill="none" stroke="#30363d" stroke-width="1.5"/>
+
+  <!-- meta, top-right, monospace -->
+  <text x="716" y="42" text-anchor="end" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13.5" fill="#6e7681">v0.5.0 · 7 skills · MIT</text>
 
   <!-- wordmark -->
-  <text x="48" y="124" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="30" fill="#94a3b8">~/</text>
-  <text x="84" y="124" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="52" font-weight="700" fill="#f8fafc">orchestrator</text>
-  <text x="48" y="190" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="52" font-weight="700" fill="#f8fafc">-loop</text>
+  <text x="44" y="104" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="26" fill="#6e7681">~/</text>
+  <text x="80" y="104" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="42" font-weight="700" fill="#e6edf3">orchestrator-loop</text>
 
-  <!-- accent underline -->
-  <rect x="50" y="210" width="300" height="5" rx="2.5" fill="url(#acc)"/>
+  <!-- accent rule -->
+  <rect x="46" y="124" width="232" height="3" fill="#58a6ff"/>
 
-  <!-- rhythm line -->
-  <text x="50" y="262" font-size="29" font-weight="600" fill="#cbd5e1">plan
-    <tspan fill="#475569"> · </tspan>build<tspan fill="#475569"> · </tspan>verify<tspan fill="#475569"> · </tspan>repeat</text>
+  <!-- subtitle -->
+  <text x="46" y="162" font-size="19" fill="#adbac7">Set one goal. Claude plans it, writes the spec, hands the code to an</text>
+  <text x="46" y="188" font-size="19" fill="#adbac7">executor, then verifies the result against reality — and only then accepts it.</text>
 
-  <!-- go chip -->
-  <rect x="566" y="232" width="150" height="64" rx="32" fill="url(#acc)"/>
-  <text x="641" y="275" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="32" font-weight="700" fill="#fff">go</text>
-  <text x="641" y="156" text-anchor="middle" font-size="19" fill="#94a3b8">one command</text>
+  <!-- command prompt -->
+  <rect x="46" y="206" width="148" height="34" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+  <text x="62" y="229" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" fill="#8b949e">$</text>
+  <text x="80" y="229" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" font-weight="700" fill="#58a6ff">go</text>
+  <rect x="108" y="216" width="10" height="17" fill="#58a6ff" opacity="0.9"/>
+  <text x="210" y="229" font-size="15" fill="#6e7681">one command starts a session</text>
 </svg>

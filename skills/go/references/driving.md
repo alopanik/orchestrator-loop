@@ -40,7 +40,35 @@ goals name an outcome + its proof and often span several PRDs:
   surface renders it in the app (renders + network 200 + datastore), with no irreversible action
   enabled — pause before the first production write."
 
-Confirm in one line, then move. Don't gold-plate the goal; act on the best reading.
+Confirm in one line, then move to refinement (Step 2.5) — don't drive yet.
+
+## Step 2.5 — Refine into full requirements (garbage in, garbage out)
+
+The single most valuable thing `go` does before building. A crisp-sounding goal almost always
+hides decisions that change what gets built. Close them with a short, batched round of questions,
+then decompose to testable requirements at every level.
+
+Worked example — goal: *"add a scoring engine + a surface for it."* That's weak. The refinement
+pass asks (batched, high-signal):
+
+- **Scope / data:** what's scored, on what inputs, how often? Is there ground truth to measure
+  accuracy against, or only proxies?
+- **Integration surface (the part agents skip):** which route does the surface live at? which
+  table stores scores, and *who is the single writer*? who reads it downstream?
+- **Success + sanity bounds:** what accuracy clears the bar, measured how (OOF? per segment)?
+  what value would be *too good to be true* (a data-bug signal) for this metric?
+- **Non-goals / irreversible steps:** live writes? a migration? — flag the pause points now.
+
+From the answers, emit an itemized **requirements spec** — e.g.:
+1. `score_engine` computes X from finalized inputs only; OOF accuracy ≥ baseline, per segment,
+   FDR-corrected. *(acceptance: re-run OOF; beats baseline; no value above the plausible ceiling.)*
+2. one writer (`score_writer`) → `item_scores`; catalogued in the constitution.
+3. read-only surface at `/scores`; three signals (renders + 200 + datastore).
+4. non-goals: no production write this session — pause before the first one.
+
+THIS itemized spec is what the roadmap decomposes; every PRD's acceptance traces back to a line
+in it. If the user said "just go," you'd instead restate the goal in one line, note "refinement
+skipped — gaps will surface mid-drive," and proceed.
 
 ## Step 3 — Drive
 

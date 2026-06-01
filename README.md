@@ -4,7 +4,7 @@
 
 <br/><br/>
 
-![version](https://img.shields.io/badge/version-0.4.1-6366f1?style=flat-square)
+![version](https://img.shields.io/badge/version-0.5.0-1f6feb?style=flat-square)
 &nbsp;![license](https://img.shields.io/badge/MIT-16a34a?style=flat-square)
 &nbsp;![app-agnostic](https://img.shields.io/badge/app--agnostic-7c3aed?style=flat-square)
 &nbsp;![skills](https://img.shields.io/badge/7_skills-0891b2?style=flat-square)
@@ -33,11 +33,13 @@ You don't juggle six skills. Type one word and state a goal:
 go    →    "ship the analytics dashboard, end to end"
 ```
 
-`go` **orients** (reads your project), **sets the goal** as a testable definition of done, then
-**drives the loop** — re-orienting at each seam, never stopping at a per-PRD checkpoint, never
-asking *"want me to continue?"*. It stops only when the goal is **met and independently
-verified**, a decision is genuinely yours, or you halt it — and **pauses automatically before
-anything irreversible** (a deploy, a migration, a trade).
+`go` **orients** (reads your project), **sets the goal**, then **refines it** — a short round of
+probing questions that decomposes the goal into fully-covered requirements at every level
+(*garbage in, garbage out*; skippable when the goal's already crisp). Only then does it **drive
+the loop** — re-orienting at each seam, never stopping at a per-PRD checkpoint, never asking
+*"want me to continue?"*. It stops only when the goal is **met and independently verified**, a
+decision is genuinely yours, or you halt it — and **pauses automatically before anything
+irreversible** (a deploy, a migration, a trade).
 
 <br/>
 
