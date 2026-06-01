@@ -1,8 +1,9 @@
-# App profile — <YOUR APP NAME>
-
 > **Operating under orchestrator-loop — the plugin's `GUARDRAILS.md` is always in effect; read
-> it first.** (This line is what keeps the guardrails on in Cowork, where SessionStart hooks
-> don't reliably fire. Keep it at the very top.)
+> it first.** (This blockquote MUST be the very first content in the file — above the title —
+> because it is what keeps the guardrails on in Cowork, where SessionStart hooks don't reliably
+> fire. Do not put a heading or anything else above it.)
+
+# App profile — <YOUR APP NAME>
 
 This file is YOUR app's input to the orchestrator-loop framework. The framework (the
 guardrails + the rules→roadmap→PRD→handoff→verify loop) lives in the plugin and is frozen.

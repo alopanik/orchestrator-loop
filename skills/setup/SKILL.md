@@ -79,12 +79,23 @@ for this step so setup never depends on a path outside the skill folder.)
 
 ## Step 5 — Confirm guardrail delivery
 
-Cowork doesn't reliably fire SessionStart hooks, so the app-profile's first line must read:
-*"Operating under orchestrator-loop — the plugin's GUARDRAILS.md is always in effect; read it
-first."* Tell the user to start a **new session** (guardrails load at session start) and verify
-by asking *"what do you do with a too-good-to-be-true result?"* — the answer must be, in
-substance, **distrust it, reproduce the number, find the data bug.** If it isn't, the pointer
-line is missing or the plugin didn't load.
+Cowork doesn't reliably fire SessionStart hooks, so the guardrails ride on the app-profile: the
+pointer blockquote (*"Operating under orchestrator-loop — the plugin's GUARDRAILS.md is always in
+effect; read it first."*) **must be the first non-empty content in `CLAUDE.md`** — above the
+title, above everything.
+
+**Verify this mechanically; do not eyeball it.** Read the file and check that its first non-empty
+line is the pointer blockquote (e.g. `head` it, or test that line 1 begins with `>` and contains
+"GUARDRAILS.md is always in effect"). If a title or anything else sits above it — a real, easy
+mistake, and one that silently disables the guardrails in Cowork — **move the pointer to the top
+yourself and re-check.** Reporting "pointer on line 1 ✓" without actually confirming the first
+line is exactly the kind of unverified-claim this framework exists to prevent: confirm the
+mechanism, then state it.
+
+Then have the user start a **new session** (guardrails load at session start) and verify by
+asking *"what do you do with a too-good-to-be-true result?"* — the answer must be, in substance,
+**distrust it, reproduce the number, find the data bug.** If it isn't, the pointer isn't first or
+the plugin didn't load.
 
 ## Output
 A connected project + a committed `CLAUDE.md` app-profile + a confirmed-loaded guardrail check,
