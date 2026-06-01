@@ -104,6 +104,11 @@ If verification fails, leave the gate armed — the failing check *should* keep 
 it's fixed. Clearing a still-red gate to escape it is exactly the self-asserted "done" this
 framework exists to prevent.
 
+**Confirm the tests weren't gamed (PRD-005).** Part of a real pass: run
+`python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/check_tests.py" verify` — it proves the acceptance
+tests are unchanged since their committed *failing* baseline and are now genuinely green. A
+handback that edited its own tests to go green fails this and must be rejected.
+
 ## Terminate in strategy
 
 End with a verdict — accept / fix-list / redesign — and the concrete next action. Never a bare

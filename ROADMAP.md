@@ -26,7 +26,7 @@ Forking risk if the verifier internals (003, 004) aren't hardened first.
   diff + criteria + app-profile (the adoption play).
 
 ## Status
-- [x] 001 · [x] 002 · [x] 003 · [x] 004 · [ ] 005 · [ ] 006 · [ ] 007 · [ ] 008 · [ ] 009
+- [x] 001 · [x] 002 · [x] 003 · [x] 004 · [x] 005 · [ ] 006 · [ ] 007 · [ ] 008 · [ ] 009
 
 001 shipped (80e60c9): one-command catch-rate; AT-3 proven (Haiku 5/5 guarded → 0/5 credulous;
 Opus saturated). Evidence: test/harness/AT3-evidence.md.
@@ -36,3 +36,4 @@ Opus saturated). Evidence: test/harness/AT3-evidence.md.
 run.py --check-isolation guard; isolated verifier caught a planted defect from the bundle alone.
 004 shipped: fail-closed Stop hook (hooks/stop_gate.py) — blocks turn-end while a gate's
 scriptable checks are red; 10/10 unit tests; real demo blocks a planted failing check.
+005 shipped: check_tests.py (tests-first baseline + tamper/green); composed into the Stop gate — a handback that edits its own tests to pass is blocked (4/4 unit + AT-5 gate demo).

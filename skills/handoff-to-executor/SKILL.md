@@ -43,6 +43,18 @@ Only commands a machine can run go here (a test, a lint, a query that exits nonz
 the un-gameable subset of the acceptance tests. The gate is fail-closed: a missing or erroring
 check counts as a failure. `verify-handback` clears it once the work is independently verified.
 
+**Tests-first (PRD-005).** Acceptance tests are written and committed **failing** before the
+executor implements — then record that red baseline so the verifier can prove the tests weren't
+edited to pass:
+
+```
+python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/check_tests.py" baseline --prd <ID> \
+    --cmd "<test cmd>" --tests "<test glob>" [--tests "<glob>" ...]
+```
+
+Add `check_tests.py verify` to the gate's checks so a handback that altered its own tests (or
+left them red) cannot end the turn.
+
 ## After dispatch
 
 Wait for the handback. Do not start the next PRD. When the executor reports done, do NOT
