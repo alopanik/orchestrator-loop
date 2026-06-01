@@ -26,9 +26,11 @@ Forking risk if the verifier internals (003, 004) aren't hardened first.
   diff + criteria + app-profile (the adoption play).
 
 ## Status
-- [x] 001 · [x] 002 · [ ] 003 · [ ] 004 · [ ] 005 · [ ] 006 · [ ] 007 · [ ] 008 · [ ] 009
+- [x] 001 · [x] 002 · [x] 003 · [ ] 004 · [ ] 005 · [ ] 006 · [ ] 007 · [ ] 008 · [ ] 009
 
 001 shipped (80e60c9): one-command catch-rate; AT-3 proven (Haiku 5/5 guarded → 0/5 credulous;
 Opus saturated). Evidence: test/harness/AT3-evidence.md.
 002 shipped (ef3d47e): startup injection 449→48 lines (29KB→3.3KB); Haiku primer-only 5/5
 (== full); guard run.py --check-startup keeps GUARDRAILS.md the SSoT.
+003 shipped (7103e3b): verify-handback = fresh subagent fed only diff+criteria+facts;
+run.py --check-isolation guard; isolated verifier caught a planted defect from the bundle alone.
