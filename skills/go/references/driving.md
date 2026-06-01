@@ -35,10 +35,10 @@ read.
 Restate the user's goal as a testable definition of done, or propose one from the roadmap. Good
 goals name an outcome + its proof and often span several PRDs:
 
-- weak: "work on market-making."
-- strong: "a paper market-making engine exists and its edge is proven out-of-sample on the clean
-  corpus, AND a `/…/mm` surface renders it in the app (renders + network 200 + datastore), with
-  no real-money path enabled — pause before any live order."
+- weak: "work on the new scoring feature."
+- strong: "a scoring engine exists and its accuracy is proven out-of-fold on held-out data, AND a
+  surface renders it in the app (renders + network 200 + datastore), with no irreversible action
+  enabled — pause before the first production write."
 
 Confirm in one line, then move. Don't gold-plate the goal; act on the best reading.
 
@@ -64,27 +64,30 @@ a crisp statement of the decision and your recommendation. Otherwise keep going.
 
 ## Worked example (app-agnostic)
 
-**Goal:** "Two reliable revenue methods live in the app, each proven before it's trusted; ship
-the UI for both. Method 1 already shipped. Drive Method 2 (market-making) home."
+**Goal:** "Ship the next roadmap chunk: a working item-scoring capability, proven before it's
+trusted and surfaced in the app. Drive it home — don't stop at one PRD."
 
 A `go` session:
 
-1. **Orient.** Read app-profile → sanity bounds say "edge is only real if it survives
-   out-of-fold on the clean corpus; >X return on N≥… is a data bug." Roadmap → next is PRD-300
-   (market-making). PRD folder → 299 shipped, nothing in flight. Report: *last shipped 299 ·
-   in-flight none · parked the categories idea · next 300 (MM).*
-2. **Goal.** Restate: "PRD-300: a paper MM engine whose edge is proven OOS, + an integrated
-   `/mm` surface (renders + 200 + datastore), no live orders. Done when both hold, verified."
-3. **Drive 300.** draft-prd (problem: is there MM edge? proof bar: OOS spread-capture minus
-   fees/adverse-selection, per-partition) → architect-review (extends the existing pricing
-   store? one write-path?) → handoff (build the paper engine; commit on green) → verify
-   (reproduce the edge number myself; is it above the sanity floor? does the surface render with
-   live data?). Edge proven on paper, surface integrated, verified.
-4. **Boundary.** The next step would be enabling **real orders** — irreversible/real-money.
-   STOP. Report: "Method 2 paper-proven and surfaced, verified; going live needs your
-   go/no-go — recommend a capped live pilot only after N days of paper tracking holds the
-   edge." Wait.
+1. **Orient.** Read app-profile → sanity bounds say "a score is only trustworthy if it survives
+   out-of-fold on held-out data; accuracy above the theoretical ceiling, or below the
+   chance floor, is a data bug." Roadmap → next is PRD-42 (scoring engine), then PRD-43 (the UI
+   for it). PRD folder → 41 shipped, nothing in flight. Report: *last shipped 41 · in-flight none
+   · parked the export feature · next 42 then 43.*
+2. **Goal.** Restate: "PRD-42 + PRD-43: a scoring engine whose accuracy is proven out-of-fold,
+   plus an integrated surface that renders it (renders + 200 + datastore). Done when both hold,
+   verified — no production write enabled yet."
+3. **Drive 42.** draft-prd (problem with proof; bar: OOF accuracy beats the baseline,
+   per-partition) → architect-review (extends the existing data model? one write-path?) →
+   handoff (build it; commit on green) → verify (reproduce the accuracy number myself; is it
+   between the chance floor and the ceiling, or implausibly high → a leak?). Verified. **Seam:
+   immediately start 43** — don't check in.
+4. **Drive 43.** Same five stages for the surface; verify with the three signals (renders +
+   network 200 + datastore reflects it) and a journey walk. Verified.
+5. **Boundary.** The goal is met and verified, so the session ends here with a status against the
+   definition of done. *(If the next step had been flipping on a production write or a migration,
+   `go` would instead STOP and ask — stating the decision and a recommendation.)*
 
-Note what `go` did: drove a whole PRD through all five stages without checking in, re-oriented at
-the seam, kept the skepticism numerate against the app's sanity bounds, and stopped exactly at
-the real-money line — not before, not after.
+Note what `go` did: drove **two** PRDs through all five stages without checking in between,
+re-oriented at the seam, kept the skepticism numerate against the app's sanity bounds, and ended
+only when the whole goal was verified — not after the first PRD.
