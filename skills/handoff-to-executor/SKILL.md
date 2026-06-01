@@ -30,6 +30,20 @@ The executor (`~~executor`) writes the code; you do not. The handoff is a self-c
 - **Branch + acceptance.** Name the branch. Restate the acceptance tests. Require the executor
   to run them and report before/after numbers.
 
+## Preflight the connectors (PRD-010) — right project, before any write
+
+Before dispatch, verify the executor is wired to the project your app-profile names — not a
+different Supabase/Vercel/repo:
+
+```
+python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/preflight.py" check
+```
+
+It compares each connector's declared ref (`CLAUDE.md`) to what the connected tool actually
+reports (a per-connector probe in `.orchestrator/connectors.json`). Fail-closed on a mismatch,
+a missing probe, or an erroring probe — **do not hand off** until it's green. Add
+`preflight.py check` to the gate manifest so a wrong-project handoff also blocks the turn.
+
 ## Arm the fail-closed gate (Claude Code)
 
 When you dispatch, register the PRD's **scriptable** acceptance checks with the Stop gate so the
