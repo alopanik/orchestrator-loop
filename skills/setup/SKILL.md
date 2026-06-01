@@ -73,7 +73,8 @@ Use the skeleton bundled with THIS skill at `references/app-profile.skeleton.md`
 this file — no guessing at the plugin root). Read it, fill it in from what was detected — the
 executor tier + connector mappings, infra, domain rules, **sanity bounds / impossible values**,
 and the constitution + roadmap pointers — and write the result into the repo as `CLAUDE.md`. Keep
-the very first line as the guardrails pointer (Step 5 depends on it). (The plugin root also ships
+the guardrails-pointer blockquote as the **first non-empty content** (above the title, no blank
+line above it) — Step 5 verifies this. (The plugin root also ships
 a fuller `app-profile.template.md` for reference, but the bundled skeleton is the source of truth
 for this step so setup never depends on a path outside the skill folder.)
 
@@ -84,13 +85,16 @@ pointer blockquote (*"Operating under orchestrator-loop — the plugin's GUARDRA
 effect; read it first."*) **must be the first non-empty content in `CLAUDE.md`** — above the
 title, above everything.
 
-**Verify this mechanically; do not eyeball it.** Read the file and check that its first non-empty
-line is the pointer blockquote (e.g. `head` it, or test that line 1 begins with `>` and contains
-"GUARDRAILS.md is always in effect"). If a title or anything else sits above it — a real, easy
-mistake, and one that silently disables the guardrails in Cowork — **move the pointer to the top
-yourself and re-check.** Reporting "pointer on line 1 ✓" without actually confirming the first
-line is exactly the kind of unverified-claim this framework exists to prevent: confirm the
-mechanism, then state it.
+**Verify this mechanically; do not eyeball it.** Read the file and confirm its **first non-empty
+line** both (a) begins with `>` and (b) contains the single token `GUARDRAILS`. Match on that one
+token, NOT a multi-word phrase — the canonical sentence ("…GUARDRAILS.md is always in effect…")
+wraps across two blockquote lines, so a phrase grep will falsely FAIL on a correct file. Robust
+check, e.g.:
+`awk 'NF{ if ($0 ~ /^>/ && /GUARDRAILS/) print "PASS"; else print "FAIL"; exit }' CLAUDE.md`
+(first non-empty line only). If it FAILs — a title or blank line sits above the pointer, a real
+mistake that silently disables the guardrails in Cowork — **move the pointer block to the very
+top yourself and re-run the check.** Reporting "pointer on line 1 ✓" without running the check is
+exactly the unverified-claim this framework forbids: confirm the mechanism, then state it.
 
 Then have the user start a **new session** (guardrails load at session start) and verify by
 asking *"what do you do with a too-good-to-be-true result?"* — the answer must be, in substance,
