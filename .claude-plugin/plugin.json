@@ -1,7 +1,7 @@
 {
   "name": "orchestrator-loop",
-  "version": "0.3.0",
-  "description": "A reusable agentic-engineering framework. Freezes the rules -> roadmap -> PRD -> handoff -> verify loop, its structural guardrails, AND its epistemics (a-surprising-good-result-is-a-data-bug skepticism, out-of-fold + FDR analytical rigor, forensic verification, intellectual honesty) so any app can be driven by a planning/QA orchestrator that hands execution to a coding agent. App specifics, sanity bounds, and connectors are supplied per install.",
+  "version": "0.3.1",
+  "description": "Turn Claude into a disciplined engineering lead: it plans the work, writes the spec, hands the coding to an executor, then independently QAs the result against reality. Enforces a fixed set of engineering guardrails and a skeptical, evidence-first way of working — distrust too-good results, find the root cause, prove it with numbers, stay honest. App-agnostic: bring your own project profile and tools.",
   "author": {
     "name": "Andrew Lopanik"
   },

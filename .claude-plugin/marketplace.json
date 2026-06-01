@@ -7,7 +7,7 @@
   },
   "metadata": {
     "description": "Distribution marketplace for the orchestrator-loop plugin.",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "plugins": [
     {
@@ -16,8 +16,8 @@
         "source": "github",
         "repo": "alopanik/orchestrator-loop"
       },
-      "description": "Reusable agentic-engineering framework: the rules->roadmap->PRD->handoff->verify loop plus its guardrails AND epistemics (skepticism, OOF+FDR rigor, forensic verification, honesty), app-agnostic. Bring your own app-profile + connectors.",
-      "version": "0.3.0",
+      "description": "Turn Claude into a disciplined engineering lead: plans the work, writes the spec, hands the coding to an executor, then independently QAs the result. Enforces engineering guardrails and a skeptical, evidence-first mindset — distrust too-good results, find the root cause, stay honest. App-agnostic: bring your own project profile and tools.",
+      "version": "0.3.1",
       "tags": [
         "orchestration",
         "prd",
