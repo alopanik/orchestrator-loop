@@ -17,11 +17,11 @@
 
   <!-- title -->
   <text x="640" y="40" text-anchor="middle" font-size="21" font-weight="700" fill="#e2e8f0">The loop runs to the goal — not to the next PRD</text>
-  <text x="640" y="66" text-anchor="middle" font-size="14.5" fill="#94a3b8">plan + QA stay with Claude · an executor writes the code · stop only when verified, blocked, or asked</text>
+  <text x="640" y="66" text-anchor="middle" font-size="16" fill="#94a3b8">plan + QA stay with Claude · an executor writes the code · stop only when verified, blocked, or asked</text>
 
   <!-- return arc: verify -> draft-prd, clean over the top -->
   <path d="M1110 180 L1110 132 Q1110 116 1094 116 L610 116 Q594 116 594 132 L594 178" fill="none" stroke="#a855f7" stroke-width="2.5" marker-end="url(#p)"/>
-  <text x="852" y="108" text-anchor="middle" font-size="14.5" font-style="italic" fill="#c4b5fd">next PRD · same turn</text>
+  <text x="852" y="108" text-anchor="middle" font-size="16" font-style="italic" fill="#c4b5fd">next PRD · same turn</text>
 
   <!-- entry: one goal -> go -> pipeline -->
   <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" text-anchor="middle">
@@ -32,7 +32,7 @@
     <rect x="212" y="184" width="104" height="50" rx="25" fill="url(#lacc)"/>
     <text x="264" y="217" font-size="24" font-weight="700" fill="#fff">go</text>
   </g>
-  <text x="264" y="258" text-anchor="middle" font-size="13" fill="#64748b">orient first</text>
+  <text x="264" y="258" text-anchor="middle" font-size="15" fill="#64748b">orient first</text>
 
   <!-- pipeline boxes -->
   <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16.5" font-weight="600" text-anchor="middle">
@@ -71,6 +71,6 @@
     <text x="938" y="352" font-size="18">⏸️</text>
     <text x="938" y="374" font-size="15" font-weight="700" fill="#fcd34d">pause for you</text>
   </g>
-  <text x="938" y="408" text-anchor="middle" font-size="13.5" fill="#d97706">deploy · migration · real money</text>
-  <text x="1110" y="408" text-anchor="middle" font-size="13.5" fill="#4ade80">met + verified</text>
+  <text x="938" y="408" text-anchor="middle" font-size="15" fill="#d97706">deploy · migration · real money</text>
+  <text x="1110" y="408" text-anchor="middle" font-size="15" fill="#4ade80">met + verified</text>
 </svg>
