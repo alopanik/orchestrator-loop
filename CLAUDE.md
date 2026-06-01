@@ -44,15 +44,20 @@ two manifests and must always match.
   or skills is not "done" until the catch-rate is re-run.
 
 ## Sanity bounds / impossible values
-- **Catch-rate target: ≥ 10/11 (now 12 scenarios after PRD-006) unprompted.** A drop below
-  target after a guardrails/skill change is a regression, not noise.
+- **The durable regression signal is the deterministic self-test + the ablation delta — NOT a
+  single absolute catch-rate number.** `run.py --self-test` must stay green (the judge discriminates
+  the good/bad fixtures; bad ones FAIL); and guarded must beat credulous on the core scenarios.
+  Absolute live catch-rate is **model-dependent**: a frontier model saturates (~12/12 with or
+  without the rules), a small model is variable (~6–10/12 run-to-run). A self-test regression, or a
+  collapsed guarded-vs-credulous delta, after a guardrails/skill change IS a regression.
 - **A *rising* catch-rate after we SHRINK the guardrails (PRD-002) is "too good" until proven** —
   first hypothesis is the judge got more lenient or is keyword-matching the scenario prompt
   itself, not the agent's reasoning. Reproduce with the ablation control before believing it.
-- **11/11 (or 12/12) from the rubric judge is suspect**: confirm the judge actually fails a
-  deliberately-broken agent (the ablation must drop the score) before trusting a perfect board.
-- Startup-injection budget (PRD-002): the SessionStart stub should be **≤ ~60 lines / ≤ ~4 KB**
-  (today: 449 lines / ~29 KB). A "fraction of today" that is still > ~1/4 of today hasn't met it.
+- **A perfect board from the rubric judge is suspect**: confirm the judge actually fails a
+  deliberately-broken agent (the ablation must drop the score) before trusting it.
+- Startup-injection budget (PRD-002): the SessionStart stub stays **≤ 60 lines / ≤ 4 KB**.
+  Achieved: `STARTUP.md` is **50 lines / 3.3 KB** (was 449 / 29 KB); `run.py --check-startup`
+  enforces the budget + that `GUARDRAILS.md` remains the intact canonical source.
 
 ## Constitution / source of truth
 `ARCHITECTURE.md` — lists every canonical component (its one purpose, one home, who reads it).

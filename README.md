@@ -90,11 +90,19 @@ harness for the engineering loop.
 ## Proof: a catch-rate you can run
 
 The behavioral test kit is the plugin's regression signal — 12 clean-room scenarios, each a
-planted defect mapped to a guardrail and a real incident. One command scores it:
+planted defect mapped to a guardrail and a real incident. Two layers of proof, no model required
+for the first:
 
 ```bash
-python3 test/harness/run.py          # prints per-scenario PASS/FAIL + a catch-rate, exits nonzero below threshold
+# Model-free, runs anywhere — proves the judge is sound and the primer carries the rules:
+python3 test/harness/run.py --self-test       # judge discriminates 14/14 good/bad fixtures
+python3 test/harness/run.py --check-startup    # the 50-line primer is in budget + canon intact
+
+# Live catch-rate — needs an authenticated agent (logged-in `claude`, or set OL_AGENT_CMD):
+python3 test/harness/run.py                     # runs the 12 scenarios, prints per-scenario PASS/FAIL + the catch-rate
 ```
+
+(No agent configured? `run.py` tells you so — it won't print a misleading `0/12`.)
 
 What's actually verified (see [`test/harness/AT3-evidence.md`](test/harness/AT3-evidence.md) — we
 publish only numbers that survive our own forensic check):
@@ -152,6 +160,12 @@ more than a checklist:
   hits the gate; a migration never qualifies.
 - **Decision ledger.** Every gate decision (pass/block + evidence) is appended to
   `.orchestrator/ledger.jsonl`; `stop_gate.py ledger` is the one-line summary surface.
+
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/gates.svg" alt="Seven fail-closed gates per cycle: refinement, roadmap dependency, draft-PRD proof, architect-review, handoff scope, verify-handback, session completion — you set one goal; the loop enforces all seven before 'done.'" width="62%">
+
+</div>
 
 <br/>
 

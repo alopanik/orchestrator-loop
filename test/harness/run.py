@@ -137,6 +137,11 @@ def run_agent(agent_cmd, prompt, timeout):
     out = (proc.stdout or "") + (proc.stderr or "")
     if proc.returncode != 0 and not proc.stdout:
         return None, f"agent exited {proc.returncode}: {out.strip()[:200]}"
+    if not (proc.stdout or "").strip():
+        # Empty output is NOT a (failing) transcript — almost always the agent CLI isn't
+        # installed/authenticated. Surface it instead of scoring a misleading 0/N.
+        return None, ("agent produced no output — is the agent CLI installed and authenticated? "
+                      f"(login `claude`, or set OL_AGENT_CMD). stderr: {(proc.stderr or '').strip()[:160]}")
     return proc.stdout, None
 
 
@@ -152,18 +157,33 @@ def judge_transcript(doc, scenario, transcript, judge_cmd=None):
     return judge.score(transcript, scenario, doc.get("global_fail_any"))
 
 
-def report(results, threshold, total, as_json):
+def _is_agent_error(reason):
+    return reason.startswith("agent ") or reason.startswith("no transcript")
+
+
+def report(results, threshold, total, as_json, full_count=None):
     n_pass = sum(1 for r in results if r["passed"])
     pct = round(100 * n_pass / total) if total else 0
+    errored = [r for r in results if not r["passed"] and _is_agent_error(r["reason"])]
+    all_unavailable = results and len(errored) == len(results)
     if as_json:
         print(json.dumps({"catch_rate": f"{n_pass}/{total}", "percent": pct,
-                          "threshold": threshold, "results": results}, indent=2))
-    else:
-        for r in results:
-            mark = "PASS" if r["passed"] else "FAIL"
-            print(f"  [{mark}] {r['id']:<4} {r['title'][:48]:<48} {r['reason']}")
-        print()
-        print(f"catch-rate: {n_pass}/{total} ({pct}%)   threshold: {threshold}")
+                          "threshold": threshold, "agent_unavailable": all_unavailable,
+                          "results": results}, indent=2))
+        return 0 if (n_pass >= threshold and not all_unavailable) else (2 if all_unavailable else 1)
+    for r in results:
+        mark = "PASS" if r["passed"] else "FAIL"
+        print(f"  [{mark}] {r['id']:<4} {r['title'][:48]:<48} {r['reason']}")
+    print()
+    if all_unavailable:
+        # Don't report a misleading 0/N — no scenario was actually scored.
+        print("AGENT UNAVAILABLE: no scenario produced a transcript, so nothing was scored.")
+        print("Install/authenticate the agent CLI (`claude` login) or set OL_AGENT_CMD, then re-run.")
+        print("Model-free checks that work right now: run.py --self-test · --check-startup · --check-sync")
+        return 2
+    thr = f"{threshold}/{full_count}" if full_count and total != full_count else str(threshold)
+    note = f"   (subset of {full_count}; threshold is for the full suite)" if full_count and total != full_count else ""
+    print(f"catch-rate: {n_pass}/{total} ({pct}%)   threshold: {thr}{note}")
     return 0 if n_pass >= threshold else 1
 
 
@@ -296,7 +316,7 @@ def main():
             passed, detail = judge_transcript(doc, s, fp.read_text(), args.judge)
             results.append({"id": s["id"], "title": s["title"], "passed": passed,
                             "reason": judge.explain(detail) if "groups" in detail else str(detail)})
-        return report(results, threshold, total, args.as_json)
+        return report(results, threshold, total, args.as_json, full_count=len(doc["scenarios"]))
 
     # live mode
     method_text = Path(args.method).read_text()
