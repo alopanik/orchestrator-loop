@@ -35,8 +35,15 @@ SCENARIOS_JSON = REPO / "test" / "scenarios.json"
 SCENARIOS_MD = REPO / "test" / "scenarios.md"
 APP_PROFILE = REPO / "test" / "sample-app-profile.md"
 DEFAULT_METHOD = REPO / "GUARDRAILS.md"
+STARTUP_MD = REPO / "STARTUP.md"
+HOOKS_JSON = REPO / "hooks" / "hooks.json"
 FIXTURES = HERE / "fixtures"
 DEFAULT_AGENT = "claude -p --output-format text"
+
+STARTUP_MAX_LINES = 60
+STARTUP_MAX_BYTES = 4096
+CANON_ANCHORS = ["## Epistemics", "## Analytical rigor", "## Verification discipline",
+                 "## Design guardrails", "Continuous execution"]
 
 
 def load():
@@ -198,6 +205,42 @@ def cmd_self_test(doc):
     return 0
 
 
+# ---------- startup primer guard (PRD-002) ----------
+
+def cmd_check_startup():
+    problems = []
+    if not STARTUP_MD.exists():
+        print("STARTUP.md missing", file=sys.stderr)
+        return 1
+    text = STARTUP_MD.read_text()
+    nlines = text.count("\n") + (0 if text.endswith("\n") else 1)
+    nbytes = len(text.encode())
+    if nlines > STARTUP_MAX_LINES:
+        problems.append(f"STARTUP.md is {nlines} lines (budget {STARTUP_MAX_LINES})")
+    if nbytes > STARTUP_MAX_BYTES:
+        problems.append(f"STARTUP.md is {nbytes} bytes (budget {STARTUP_MAX_BYTES})")
+    if "GUARDRAILS.md" not in text:
+        problems.append("STARTUP.md must point to GUARDRAILS.md (the canonical source)")
+    canon = DEFAULT_METHOD.read_text() if DEFAULT_METHOD.exists() else ""
+    for anchor in CANON_ANCHORS:
+        if anchor not in canon:
+            problems.append(f"GUARDRAILS.md missing canonical anchor: {anchor!r}")
+    if HOOKS_JSON.exists():
+        hooks = HOOKS_JSON.read_text()
+        if "STARTUP.md" not in hooks:
+            problems.append("SessionStart hook does not inject STARTUP.md")
+        if "GUARDRAILS.md" in hooks:
+            problems.append("SessionStart hook still references GUARDRAILS.md (should be the primer)")
+    if problems:
+        print("check-startup FAILED:", file=sys.stderr)
+        for p in problems:
+            print("   -", p, file=sys.stderr)
+        return 1
+    print(f"check-startup PASSED: STARTUP.md {nlines} lines / {nbytes} B "
+          f"(was 449 / 29081), points to canon, hook wired, anchors intact ✓")
+    return 0
+
+
 # ---------- main ----------
 
 def main():
@@ -212,6 +255,7 @@ def main():
     ap.add_argument("--json", action="store_true", dest="as_json")
     ap.add_argument("--emit-md", action="store_true")
     ap.add_argument("--check-sync", action="store_true")
+    ap.add_argument("--check-startup", action="store_true")
     ap.add_argument("--self-test", action="store_true")
     args = ap.parse_args()
 
@@ -222,6 +266,8 @@ def main():
         return cmd_emit_md(doc)
     if args.check_sync:
         return cmd_check_sync(doc)
+    if args.check_startup:
+        return cmd_check_startup()
     if args.self_test:
         return cmd_self_test(doc)
 

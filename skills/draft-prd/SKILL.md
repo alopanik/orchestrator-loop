@@ -13,7 +13,9 @@ the executor builds from. Write it to a file — **PRDs are pointers, never inli
 
 > **Full method + a complete worked PRD:** `references/methodology.md`. Most PRDs live or die
 > on two sections — **proof (numbers, not adjectives)** and **un-gameable acceptance tests**;
-> the reference goes deep on both.
+> the reference goes deep on both. The PRD-discipline rules + their war stories live in
+> `GUARDRAILS.md` (PRD discipline · Design guardrails) — load on demand; the startup primer
+> carries only the always-on core.
 
 ## File + numbering
 

@@ -67,3 +67,22 @@ python3 test/harness/run.py --method <stripped-rulebook>
 # deterministic proof the judge is not a rubber stamp (no model needed):
 python3 test/harness/run.py --self-test          # bad transcripts MUST score FAIL
 ```
+
+---
+
+## PRD-002 addendum — the slim primer preserves behavior
+
+PRD-002 shrank the SessionStart injection from `GUARDRAILS.md` (449 lines / 29 KB) to
+`STARTUP.md` (48 lines / 3.3 KB — 11% of the size). Acceptance required the catch-rate not to
+drop. Same model (Haiku), same 5 core scenarios:
+
+| injected rulebook | size | catch-rate (core 5) |
+|---|---|---|
+| full `GUARDRAILS.md` | 29 KB | 5 / 5 |
+| **slim `STARTUP.md` primer only** | **3.3 KB** | **5 / 5** |
+| none (credulous) | 0 | 0 / 5 |
+
+The primer alone reproduces the guarded behavior ("implausibly large … data bug … in-sample
+leakage … won't put it live"; "symptom patch … EXPLAIN ANALYZE"; "trust vs verification … halt
+the handback"). No regression — `run.py --check-startup` enforces the size budget and that
+`GUARDRAILS.md` remains the intact canonical source.

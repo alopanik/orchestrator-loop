@@ -13,7 +13,9 @@ against reality — as an adversary trying to break the claim, not a co-author h
 
 > **Full forensic method + a worked verification:** `references/methodology.md`. The checklist
 > below is the floor; the method is an investigation — reproduce the exact number, read the
-> deployed path, distrust any too-good instrument, and gate per partition.
+> deployed path, distrust any too-good instrument, and gate per partition. The war stories these
+> rules were paid for live in `GUARDRAILS.md` (Verification discipline · Epistemics · Analytical
+> rigor) — load them on demand; the startup primer carries only the always-on core.
 
 ## Be forensic (the floor is a checklist; the method is an investigation)
 

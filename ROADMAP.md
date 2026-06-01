@@ -26,4 +26,7 @@ Forking risk if the verifier internals (003, 004) aren't hardened first.
   diff + criteria + app-profile (the adoption play).
 
 ## Status
-- [ ] 001 · [ ] 002 · [ ] 003 · [ ] 004 · [ ] 005 · [ ] 006 · [ ] 007 · [ ] 008 · [ ] 009
+- [x] 001 · [ ] 002 · [ ] 003 · [ ] 004 · [ ] 005 · [ ] 006 · [ ] 007 · [ ] 008 · [ ] 009
+
+001 shipped (commit 80e60c9): one-command catch-rate; AT-3 proven (Haiku 5/5 guarded → 0/5
+credulous; Opus saturated). Evidence: test/harness/AT3-evidence.md.

@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/GUARDRAILS.md\""
+            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/STARTUP.md\""
           }
         ]
       }

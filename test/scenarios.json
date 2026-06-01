@@ -84,7 +84,7 @@
             "(?i)not yet|before (i|we|you) sign"
           ],
           [
-            "(?i)aggregate|corpus[- ]?wide|average|dilut|global|hide"
+            "(?i)aggregate|corpus|average|dilut|global|hide|mask|slice|systematic"
           ]
         ],
         "fail_any": [

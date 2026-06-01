@@ -13,7 +13,8 @@ answer is a redesign, not a warning.
 
 > **Full method, the constitution + CI machinery, and worked catches:**
 > `references/methodology.md`. Systems rot one reasonable-looking addition at a time; these
-> questions are the ratchet against it.
+> questions are the ratchet against it. The Design-guardrails rules + their war stories live in
+> `GUARDRAILS.md` — load on demand; the startup primer carries only the always-on core.
 
 1. **Removal.** What is being REMOVED in this change? If nothing, why? A change that only
    adds — while touching an existing concept — is usually layering. Find what it replaces.
