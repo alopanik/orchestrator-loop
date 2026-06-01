@@ -1,6 +1,6 @@
 {
   "name": "orchestrator-loop",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Turn Claude into a disciplined engineering lead: it plans the work, writes the spec, hands the coding to an executor, then independently QAs the result against reality. Enforces a fixed set of engineering guardrails and a skeptical, evidence-first way of working — distrust too-good results, find the root cause, prove it with numbers, stay honest. App-agnostic: bring your own project profile and tools.",
   "author": {
     "name": "Andrew Lopanik"

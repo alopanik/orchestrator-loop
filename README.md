@@ -19,6 +19,34 @@ looping across as many PRDs as the goal needs, without stopping to ask *"want me
 App-agnostic by design: the framework knows *how to work*; you supply *what your app is* through
 a one-time `CLAUDE.md` app-profile.
 
+## An engineering team in a loop
+
+A real change normally passes through five roles: a **PM** who turns a vague ask into testable
+requirements, an **architect** who catches layering before code, an **engineer** who builds it, a
+**QA** who tries to break it, and a **release gatekeeper** who won't let unproven work ship.
+orchestrator-loop runs all five as one delegated loop:
+
+| Role | The skill / gate that does it |
+|---|---|
+| Requirements / PM | `go` refinement — a one-line ask → a testable definition of done |
+| Architect | `architect-review` — five structural questions answered *in the PRD*, pre-code |
+| Engineer | `handoff-to-executor` → the Claude Code executor (or you, solo) |
+| QA / verifier | `verify-handback` — a context-isolated adversary that reproduces the numbers |
+| Release gatekeeper | the fail-closed Stop gate + tests-guard + decision ledger |
+
+**What that's worth, stated honestly (we don't ship fabricated productivity multipliers — that's
+the whole point):**
+- **Coordination collapsed:** the hand-offs between those five roles become one goal you delegate.
+- **Time saved = supervision removed.** You review *evidence* (reproduced numbers, the ledger),
+  you don't re-run the work or babysit each diff. Anthropic now writes [≈100% of its code with
+  Claude, with "scaffolds… to let the team trust it"](https://www.itpro.com/software/development/anthropic-labs-chief-mike-krieger-claims-claude-is-essentially-writing-itself-and-it-validates-a-bold-prediction-by-ceo-dario-amodei)
+  — orchestrator-loop is that trust scaffold, so you can delegate whole roadmap chunks instead of
+  supervising line by line.
+- **Quality you can measure, not assert:** a 12-scenario catch-rate you run yourself; on a small
+  executor the guardrails take it from **0/5 → 5/5** on the core defect classes; the gate
+  *mechanically* blocks a tampered or unproven handback. The quality delta is "defects a
+  self-asserted *done* would have shipped, caught instead."
+
 <br/>
 
 ## The moat: forensic verification, not process theater
@@ -33,6 +61,29 @@ path (not `git grep`), gates **per partition** so a break in one cohort can't hi
 average, and treats every "done" as a claim to be re-established from scratch. The verifier runs
 as a **fresh, context-isolated subagent** that sees only the diff + the acceptance criteria — never
 the builder's "here's why it works" — so it can't inherit the builder's blind spots.
+
+<br/>
+
+## Aligned with Anthropic's Claude Code guidance
+
+orchestrator-loop is, deliberately, an *enforced* implementation of the patterns Anthropic itself
+recommends — it turns "best practice" into "can't skip it":
+
+| Anthropic guidance | orchestrator-loop makes it enforced |
+|---|---|
+| Separate research/planning from implementation; prevent code-writing at the start | Plan → build → verify stay distinct; in power mode a hook *blocks* the orchestrator from coding (PRD-011) |
+| `CLAUDE.md` as short, explicit production prompts | App-profile is the SSoT for facts; the session primer is 50 lines, full rules on demand (PRD-002) |
+| Subagents in isolated context for specialized tasks | `verify-handback` runs as a fresh subagent fed only diff + criteria (PRD-003) |
+| Writer/Reviewer with **fresh context** so review isn't biased toward code it wrote | Two-brain mode + the isolated verifier — the reviewer never sees the build story |
+| "Show evidence rather than asserting success" | Reproduce the number yourself; every gate decision + evidence logged to the ledger (PRD-008) |
+| Treat it like a junior engineer you "watch, redirect, or step away from" (Lv3–4 autonomy) | The autonomy contract + a live-streamed executor you can watch (PRD-012) + a fail-closed gate at the key points (PRD-004) |
+
+Sources: [Claude Code best practices](https://code.claude.com/docs/en/best-practices) ·
+[How Anthropic teams use Claude Code](https://www-cdn.anthropic.com/58284b19e702b49db9302d5b6f135ad8871e7658.pdf) ·
+[effective context engineering for agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents).
+Cat Wu (Head of Product, Claude Code) and Mike Krieger frame Anthropic's direction as a **harness
+strategy** — Chat / Cowork / Code as modes over one capable model; this plugin is an opinionated
+harness for the engineering loop.
 
 <br/>
 
