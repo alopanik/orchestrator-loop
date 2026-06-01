@@ -12,10 +12,19 @@
   "plugins": [
     {
       "name": "orchestrator-loop",
-      "source": ".",
+      "source": {
+        "source": "github",
+        "repo": "alopanik/orchestrator-loop"
+      },
       "description": "Reusable agentic-engineering framework: the rules->roadmap->PRD->handoff->verify loop plus its guardrails AND epistemics (skepticism, OOF+FDR rigor, forensic verification, honesty), app-agnostic. Bring your own app-profile + connectors.",
       "version": "0.2.0",
-      "tags": ["orchestration", "prd", "roadmap", "qa", "guardrails"]
+      "tags": [
+        "orchestration",
+        "prd",
+        "roadmap",
+        "qa",
+        "guardrails"
+      ]
     }
   ]
 }
