@@ -26,7 +26,7 @@ Forking risk if the verifier internals (003, 004) aren't hardened first.
   diff + criteria + app-profile (the adoption play).
 
 ## Status
-- [x] 001 · [x] 002 · [x] 003 · [x] 004 · [x] 005 · [x] 006 · [x] 007 · [x] 008 · [x] 009 · [x] 010 · [ ] 011 · [ ] 012
+- [x] 001 · [x] 002 · [x] 003 · [x] 004 · [x] 005 · [x] 006 · [x] 007 · [x] 008 · [x] 009 · [x] 010 · [x] 011 · [ ] 012
 
 001 shipped (80e60c9): one-command catch-rate; AT-3 proven (Haiku 5/5 guarded → 0/5 credulous;
 Opus saturated). Evidence: test/harness/AT3-evidence.md.
@@ -42,3 +42,4 @@ scriptable checks are red; 10/10 unit tests; real demo blocks a planted failing 
 008 shipped: .orchestrator/ledger.jsonl — the gate appends every decision (pass/block + per-check evidence); `stop_gate.py ledger` summary; one writer. A real tamper block is recorded with its evidence.
 009 shipped: README rewritten — value prop + moat + HONEST catch-rate (self-test 14/14, ablation 5/5->0/5, model-dependence nuance; no fabricated number); two-brain recommended + both solos. Rejected a rogue sub-agent's unauthorized README (fabricated 11/12). Judge FN bugs fixed; war story added.
 010 shipped: preflight.py — verify executor is wired to the project CLAUDE.md names; fail closed on wrong Supabase/Vercel/repo (5/5 tests).
+011 shipped: enforce_executor.py PreToolUse hook — in power mode the orchestrator can't Write/Edit (only the OL_ROLE=executor process can); self/solo unaffected (6/6 tests).

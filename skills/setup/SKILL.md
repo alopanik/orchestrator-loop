@@ -38,6 +38,12 @@ Ask which the user wants (default to the first that fits; detect tier 2's pieces
 
 If unsure, start Tier 1 — it always works — and offer to upgrade to Tier 2 later.
 
+Record the choice so it's **enforced**, not just declared (PRD-011):
+`python3 "${CLAUDE_PLUGIN_ROOT}/hooks/enforce_executor.py" mode self` (Tier 1) or `… mode
+claude-code` (Tier 2). In `claude-code` mode a PreToolUse hook blocks the orchestrator from
+editing files — only the executor (launched with `OL_ROLE=executor`) can — so the two-brain
+separation is a guarantee.
+
 ## Step 1 — Connect the repo and read it
 
 Detect a git repo + remote; if present, **read the repo and its docs first** (README,

@@ -12,6 +12,7 @@ list — no `_v2 / _new / _copy` siblings of anything below.
 | Startup stub | The always-true core injected at session start | `STARTUP.md` *(PRD-002)* | SessionStart hook |
 | Hooks | Session lifecycle wiring | `hooks/hooks.json` | Claude Code runtime |
 | Stop gate | Fail-closed turn-end enforcement | `hooks/stop_gate.py` + `.orchestrator/gate.json` *(PRD-004)* | Claude Code `Stop` hook; loop writes the manifest |
+| Executor enforcement | Block orchestrator file-writes in power mode | `hooks/enforce_executor.py` + `.orchestrator/mode.json` *(PRD-011)* | Claude Code `PreToolUse` hook |
 | Stage skills | One skill per loop stage | `skills/<stage>/SKILL.md` (+ `references/`) | the orchestrator |
 
 **Invariant:** rule text lives once, in `GUARDRAILS.md`. `STARTUP.md` and skills point at it;
