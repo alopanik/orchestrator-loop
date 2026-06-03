@@ -10,6 +10,8 @@ description: >
 
 This is role 2 (QA). The executor's "done" is a claim. Re-establish every claim yourself,
 against reality — as an adversary trying to break the claim, not a co-author hoping it worked.
+Framed in market terms, this is **spec-compliance / drift detection**: did the diff actually
+satisfy the PRD's acceptance against reality, or did it drift?
 
 > **Full forensic method + a worked verification:** `references/methodology.md`. The checklist
 > below is the floor; the method is an investigation — reproduce the exact number, read the
@@ -122,6 +124,12 @@ framework exists to prevent.
 `python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/check_tests.py" verify` — it proves the acceptance
 tests are unchanged since their committed *failing* baseline and are now genuinely green. A
 handback that edited its own tests to go green fails this and must be rejected.
+
+**Confirm the orchestrator didn't write the code (PRD-013, power mode).** In `claude-code` mode,
+run `python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/audit_executor.py" check`. It fails closed if the
+working tree changed with no executor dispatch recorded — i.e. the orchestrator coded instead of
+dispatching. This is the **Cowork-side** enforcement of the two-brain boundary (the `PreToolUse`
+hook only binds where Claude Code fires it). `self`/solo mode: dormant, always passes.
 
 ## Terminate in strategy
 

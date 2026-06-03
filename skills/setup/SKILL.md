@@ -38,11 +38,25 @@ Ask which the user wants (default to the first that fits; detect tier 2's pieces
 
 If unsure, start Tier 1 — it always works — and offer to upgrade to Tier 2 later.
 
-Record the choice so it's **enforced**, not just declared (PRD-011):
-`python3 "${CLAUDE_PLUGIN_ROOT}/hooks/enforce_executor.py" mode self` (Tier 1) or `… mode
-claude-code` (Tier 2). In `claude-code` mode a PreToolUse hook blocks the orchestrator from
-editing files — only the executor (launched with `OL_ROLE=executor`) can — so the two-brain
-separation is a guarantee.
+Record the choice so it's **enforced**, not just declared (PRD-011/013) — write it to BOTH homes,
+then verify, before you call the tier "ready":
+
+1. **Persist the mode** (the machine fact the hooks read):
+   `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/enforce_executor.py" mode self` (Tier 1) or `… mode
+   claude-code` (Tier 2).
+2. **Match the app-profile prose** (the SSoT the model reads): the `~~executor` line in `CLAUDE.md`
+   must say the same thing. If the prose and `mode.json` disagree, the model follows the prose and
+   the guarantee silently breaks — that split is exactly the PRD-013 bug.
+3. **Verify mechanically before reporting ready** (never eyeball it): run
+   `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/enforce_executor.py" status` and confirm `.orchestrator/
+   mode.json` holds the chosen mode AND the `~~executor` line matches. If `mode.json` is missing or
+   ≠ the choice, the tier did NOT take — fix it and re-check; do **not** tell the user "tier 2 ready."
+
+In `claude-code` mode the preventive `PreToolUse` hook blocks the orchestrator from editing files
+(only the `OL_ROLE=executor` process can) **where Claude Code fires it**. The orchestrator usually
+runs in **Cowork**, where that deny is not guaranteed — so the Cowork-side guarantee is a **recorded
+dispatch + a fail-closed audit** (`test/harness/audit_executor.py check`, run at verify time,
+PRD-013): a changed tree with no executor dispatch recorded blocks the handback.
 
 ## Step 1 — Connect the repo and read it
 

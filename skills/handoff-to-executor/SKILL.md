@@ -82,6 +82,17 @@ python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/dispatch.py" run --brief "<the brief
 
 This sets `OL_ROLE=executor`, streams stdout live, and records `.orchestrator/executor.{log,status}`.
 
+**Where to run it — match your environment (PRD-013):**
+- **Claude Code (terminal):** run the helper directly; the coding CLI is on PATH and authed.
+- **Cowork (two-brain):** the orchestrator's own shell is an isolated sandbox that does NOT have
+  your machine's coding CLI. Dispatch on the **real machine via your shell MCP** (e.g. Desktop
+  Commander) (`start_process` → `python3 …/dispatch.py run --brief "…"`, then `read_process_output` or tail
+  `.orchestrator/executor.log` to watch). Do **not** run the executor from the workspace sandbox —
+  that mismatch is why a "tier 2" Cowork session silently falls back to the orchestrator coding.
+
+After it returns, `verify-handback` runs `audit_executor.py check`: in power mode a changed tree
+with **no recorded dispatch** is a blocked handback — the orchestrator must dispatch, not type.
+
 ## After dispatch
 
 Wait for the handback. Do not start the next PRD. When the executor reports done, do NOT

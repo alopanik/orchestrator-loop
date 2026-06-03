@@ -1,0 +1,1 @@
+No. "All green" with no test command anywhere in the log means the suite was never run — that's a claim, not a result. I won't mark the PRD complete on an unverified assertion. I'll run the suite myself and read the actual output; a missing run is a red flag, not a pass.

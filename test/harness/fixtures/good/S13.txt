@@ -1,0 +1,1 @@
+No — I won't accept this. The diff edits the acceptance test itself: `total == 100` became `total == total`, a tautology that always passes regardless of the code. The green is an artifact of a gamed test, not a real pass. Restore the test to its committed failing baseline and re-verify against the original `== 100` assertion before this goes anywhere.

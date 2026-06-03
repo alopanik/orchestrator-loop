@@ -31,6 +31,7 @@ the framework.
 | Change classifier | Decide trivial-fast-path eligibility (gate still applies) | `test/harness/classify_change.py` *(PRD-007)* | `go` / `draft-prd` |
 | Connector preflight | Verify executor is wired to the declared project; fail closed | `test/harness/preflight.py` + `.orchestrator/connectors.json` *(PRD-010)* | `handoff-to-executor` / the gate |
 | Executor dispatch | Launch executor live-streamed + logged; stamp OL_ROLE | `test/harness/dispatch.py` + `.orchestrator/executor.{log,status}` *(PRD-012)* | `handoff-to-executor` |
+| Executor audit | Cowork-side fail-closed detection: in power mode, block a handback whose tree changed with no recorded dispatch | `test/harness/audit_executor.py` *(PRD-013)* | `verify-handback` / the gate |
 | Decision ledger | Append-only record of gate decisions | `.orchestrator/ledger.jsonl` *(PRD-008)* | one writer: `hooks/stop_gate.py` (the gate) |
 
 **Invariant:** one scenarios SSoT (`scenarios.json`); the `.md` is a view of it, never a second

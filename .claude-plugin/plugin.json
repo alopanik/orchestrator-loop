@@ -1,11 +1,12 @@
 {
   "name": "orchestrator-loop",
-  "version": "0.6.0",
-  "description": "Turn Claude into a disciplined engineering lead: it plans the work, writes the spec, hands the coding to an executor, then independently QAs the result against reality. Enforces a fixed set of engineering guardrails and a skeptical, evidence-first way of working — distrust too-good results, find the root cause, prove it with numbers, stay honest. App-agnostic: bring your own project profile and tools.",
+  "version": "0.7.0",
+  "description": "The verification layer for AI coding. Claude plans the work, hands the coding to an executor, then independently QAs the result against reality — assuming the executor may fake \"done\" (tests edited green, fabricated numbers, unrun suites) and catching it with a runnable anti-cheat catch-rate. Enforces engineering guardrails and a skeptical, evidence-first mindset. App-agnostic: bring your own project profile and tools.",
   "author": {
     "name": "Andrew Lopanik"
   },
   "keywords": [
+    "verification",
     "orchestration",
     "prd",
     "roadmap",

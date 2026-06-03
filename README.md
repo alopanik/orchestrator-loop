@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/hero.svg" alt="orchestrator-loop — set one goal, get a verified result, stop babysitting" width="100%">
+<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/hero.svg" alt="orchestrator-loop — the verification layer for AI coding: assume the agent fakes 'done,' catch it" width="100%">
 
 <p>
-  <img src="https://img.shields.io/badge/version-0.6.0-2f81f7?style=flat-square" alt="version 0.6.0">
+  <img src="https://img.shields.io/badge/version-0.7.0-2f81f7?style=flat-square" alt="version 0.7.0">
   <img src="https://img.shields.io/badge/license-MIT-3fb950?style=flat-square" alt="MIT license">
   <img src="https://img.shields.io/badge/Claude%20Code%20%C2%B7%20Cowork-d97757?style=flat-square" alt="Claude Code and Cowork">
-  <img src="https://img.shields.io/badge/tests-40%2F40-3fb950?style=flat-square" alt="40 of 40 tests passing">
+  <img src="https://img.shields.io/badge/tests-47%2F47-3fb950?style=flat-square" alt="47 of 47 tests passing">
   <img src="https://img.shields.io/badge/plugin%20validate-passing-3fb950?style=flat-square" alt="claude plugin validate passing">
 </p>
 
@@ -22,10 +22,12 @@
 
 </div>
 
-**orchestrator-loop turns Claude into a disciplined engineering team you delegate to.** You set one
-goal. It refines the goal into testable requirements, decomposes it into numbered PRDs, builds each
-one, and then **verifies its own work like an adversary** — looping across as many PRDs as the goal
-needs and stopping only when the work is *proven* done. You review evidence, not diffs.
+**Your AI coding agent will eventually fake "done" — a test edited green, a number it never measured,
+"all passing" with nothing actually run. orchestrator-loop is the verification layer that catches it.**
+You set one goal; it plans the work, builds it, then verifies its own output like an adversary —
+reproducing every number, reading the deployed path, rejecting tampered tests and unrun results — and
+loops across as many PRDs as the goal needs, stopping only when the work is *proven* done. You delegate
+the work and review evidence, not diffs.
 
 ```text
 $ /orchestrator-loop:go   "ship per-org rate limiting, verified against the live DB"
@@ -65,6 +67,25 @@ orchestrator-loop removes the babysitting by making the agent **prove** its work
 The planning half of this is now commodity. The **verifier is the moat** — it's what makes
 autonomous delegation trustworthy enough to walk away from.
 
+### How it's different
+
+Most agent frameworks compete on the *planning* half and assume the agent is honest — BMAD-METHOD's
+role-agents, Task Master's task decomposition, spec-kit, the big agent/skill packs, Claude Code's
+Agent Teams. Their own reviewers name the gap nobody fills: *automatic spec-to-implementation
+verification*, drift detection, guaranteed spec compliance.
+
+orchestrator-loop takes the opposite bet — **assume the executor will try to fake "done"** (edit its
+own tests green, fabricate a number, claim success without running, hard-code a check to pass) and
+make the loop catch it. That's a number no planning tool publishes: a measured **anti-cheat
+catch-rate** (`python3 test/harness/run.py --category anti-cheat`), backed by a deterministic
+self-test that proves each cheat is actually caught, not rubber-stamped.
+
+| Most frameworks | orchestrator-loop |
+|---|---|
+| Help the agent plan & generate | Assume the agent may lie — and **catch it** |
+| Trust the agent's "done" / its self-run tests | Re-establish every "done" against reality; tests-first, tamper-guarded |
+| Compete on number of agents / skills | Competes on **forensic verification** — spec-compliance / drift |
+
 <br/>
 
 ## The team in one command
@@ -101,7 +122,7 @@ enforcement mechanisms are what make it more than a checklist:
 | Mechanism | What it guarantees | File |
 |---|---|---|
 | **Fail-closed gate** | A `Stop` hook refuses to end the turn while the PRD's scriptable checks are red. Missing or erroring counts as failure — never a silent pass. | `hooks/stop_gate.py` |
-| **Independent verifier** | `verify-handback` runs as a fresh subagent fed *only* the diff + acceptance criteria + app facts; a guard rejects any bundle that leaks the build story. | `test/harness/check_isolation.py` |
+| **Independent verifier** | `verify-handback` runs as a fresh subagent fed *only* the diff + acceptance criteria + app facts — **spec-compliance / drift** (did the diff satisfy the PRD against reality?); a guard rejects any bundle that leaks the build story. | `test/harness/check_isolation.py` |
 | **Test tamper-guard** | Acceptance tests are committed **failing first**; a handback that edited its own tests to go green is rejected. | `test/harness/check_tests.py` |
 | **Connector preflight** | Before dispatch, each tool is verified to point at the project your `CLAUDE.md` names — a wrong Supabase/Vercel fails closed. | `test/harness/preflight.py` |
 | **Scoped findings** | The verifier blocks only on correctness / real regressions / sanity / freshness / security. Style and non-goals are notes — it can't over-engineer. | `GUARDRAILS.md` |
@@ -111,22 +132,24 @@ enforcement mechanisms are what make it more than a checklist:
 
 ## The proof
 
-This isn't a manifesto — it's a test you can run. The kit is 12 clean-room scenarios, each a
-planted defect mapped to a guardrail and a real incident.
+This isn't a manifesto — it's a test you can run. The kit is **16 clean-room scenarios** — 12 core
+(a planted defect mapped to a guardrail and a real incident) plus **4 anti-cheat** (a *lying
+executor*: tests edited green, a fabricated number, "done" with nothing run, a hard-coded check).
 
 ```bash
 # Model-free — proves the harness itself is sound (runs anywhere, no agent needed):
-python3 test/harness/run.py --self-test        # the judge discriminates 14/14 good/bad fixtures
+python3 test/harness/run.py --self-test        # the judge discriminates 22/22 good/bad fixtures
 python3 test/harness/run.py --check-startup     # the always-on primer stays in budget, canon intact
 
 # Live — the catch-rate, run through your own authenticated agent:
-python3 test/harness/run.py                     # 12 scenarios → per-scenario PASS/FAIL + catch-rate
+python3 test/harness/run.py                     # 16 scenarios → per-scenario PASS/FAIL + catch-rate
+python3 test/harness/run.py --category anti-cheat # the lying-executor set → anti-cheat catch-rate
 ```
 
 Three things hold up under independent re-testing (see [`test/harness/AT3-evidence.md`](test/harness/AT3-evidence.md)):
 
 - **The harness measures something.** A deliberately credulous transcript scores **0**; a skeptical
-  one scores full. The judge is not a rubber stamp — 14/14, deterministic.
+  one scores full. The judge is not a rubber stamp — 22/22, deterministic.
 - **The guardrails cause the catch.** Same small model, same scenarios: **5/5 with the guardrails,
   0/5 without.** Strip the rulebook and the score collapses.
 - **It turns a cheap executor into a careful one.** Frontier models already reason this way; the
@@ -245,6 +268,6 @@ and one home — *if it isn't in the constitution, it doesn't exist*, and `archi
 
 **plan with rigor · build with leverage · verify like an adversary · ship the truth**
 
-<sub>MIT © Andrew Lopanik · 7 skills · 53 rules · 22 war stories · 12 scenarios · a catch-rate you can run yourself</sub>
+<sub>MIT © Andrew Lopanik · 7 skills · 53 rules · 22 war stories · 16 scenarios · a catch-rate you can run yourself</sub>
 
 </div>

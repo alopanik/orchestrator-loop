@@ -75,7 +75,8 @@ def emit_md(doc):
         L.append(f"**Prompt:** {s['prompt']}")
         L.append(f"**Pass:** {s['pass_desc']}")
         L.append(f"**Fail:** {s['fail_desc']}")
-        L.append(f"**Maps to:** {s['guardrail']} · incident: {s['incident']}.")
+        L.append(f"**Maps to:** {s['guardrail']} · incident: {s['incident']} · "
+                 f"category: {s.get('category', 'core')}.")
     L.append("")
     L.append("---")
     L.append("")
@@ -166,10 +167,16 @@ def report(results, threshold, total, as_json, full_count=None):
     pct = round(100 * n_pass / total) if total else 0
     errored = [r for r in results if not r["passed"] and _is_agent_error(r["reason"])]
     all_unavailable = results and len(errored) == len(results)
+    cats = {}
+    for r in results:
+        t = cats.setdefault(r.get("category", "core"), {"pass": 0, "total": 0})
+        t["total"] += 1
+        t["pass"] += 1 if r["passed"] else 0
+    by_cat = {c: f"{v['pass']}/{v['total']}" for c, v in sorted(cats.items())}
     if as_json:
         print(json.dumps({"catch_rate": f"{n_pass}/{total}", "percent": pct,
                           "threshold": threshold, "agent_unavailable": all_unavailable,
-                          "results": results}, indent=2))
+                          "by_category": by_cat, "results": results}, indent=2))
         return 0 if (n_pass >= threshold and not all_unavailable) else (2 if all_unavailable else 1)
     for r in results:
         mark = "PASS" if r["passed"] else "FAIL"
@@ -181,6 +188,8 @@ def report(results, threshold, total, as_json, full_count=None):
         print("Install/authenticate the agent CLI (`claude` login) or set OL_AGENT_CMD, then re-run.")
         print("Model-free checks that work right now: run.py --self-test · --check-startup · --check-sync")
         return 2
+    if len(by_cat) > 1:
+        print("by category: " + " · ".join(f"{c} {v}" for c, v in by_cat.items()))
     thr = f"{threshold}/{full_count}" if full_count and total != full_count else str(threshold)
     note = f"   (subset of {full_count}; threshold is for the full suite)" if full_count and total != full_count else ""
     print(f"catch-rate: {n_pass}/{total} ({pct}%)   threshold: {thr}{note}")
@@ -266,6 +275,7 @@ def cmd_check_startup():
 def main():
     ap = argparse.ArgumentParser(description="orchestrator-loop scenario harness")
     ap.add_argument("--scenario", help="run only this scenario id (e.g. S1)")
+    ap.add_argument("--category", help="run only scenarios in this category (e.g. anti-cheat, core)")
     ap.add_argument("--transcripts", help="score recorded transcripts in DIR/<id>.txt (no model)")
     ap.add_argument("--method", default=str(DEFAULT_METHOD), help="rulebook file to inject (ablation control)")
     ap.add_argument("--agent-cmd", default=os.environ.get("OL_AGENT_CMD", DEFAULT_AGENT))
@@ -301,6 +311,13 @@ def main():
         if not scenarios:
             print(f"no scenario {args.scenario}", file=sys.stderr)
             return 2
+    if args.category:
+        scenarios = [s for s in scenarios if s.get("category", "core") == args.category]
+        if not scenarios:
+            print(f"no scenarios in category {args.category!r}", file=sys.stderr)
+            return 2
+        if args.threshold is None:
+            threshold = len(scenarios)  # a category subset gates on its own size
 
     total = len(scenarios)
     results = []
@@ -314,7 +331,8 @@ def main():
                                 "reason": f"no transcript {fp.name}"})
                 continue
             passed, detail = judge_transcript(doc, s, fp.read_text(), args.judge)
-            results.append({"id": s["id"], "title": s["title"], "passed": passed,
+            results.append({"id": s["id"], "title": s["title"], "category": s.get("category", "core"),
+                            "passed": passed,
                             "reason": judge.explain(detail) if "groups" in detail else str(detail)})
         return report(results, threshold, total, args.as_json, full_count=len(doc["scenarios"]))
 
@@ -327,11 +345,12 @@ def main():
         prompt = build_prompt(method_text, profile_text, s)
         transcript, err = run_agent(args.agent_cmd, prompt, args.timeout)
         if err:
-            results.append({"id": s["id"], "title": s["title"], "passed": False,
-                            "reason": f"agent error: {err}"})
+            results.append({"id": s["id"], "title": s["title"], "category": s.get("category", "core"),
+                            "passed": False, "reason": f"agent error: {err}"})
             continue
         passed, detail = judge_transcript(doc, s, transcript, args.judge)
-        results.append({"id": s["id"], "title": s["title"], "passed": passed,
+        results.append({"id": s["id"], "title": s["title"], "category": s.get("category", "core"),
+                        "passed": passed,
                         "reason": judge.explain(detail) if "groups" in detail else str(detail)})
     return report(results, threshold, total, args.as_json)
 

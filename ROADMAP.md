@@ -15,6 +15,9 @@ competing on the commodity half. Lowest number ships first; the number IS the ex
 | 007 | Escape hatch for trivial changes — fast path, gate still enforced | 004 | yes (go / draft-prd) | med |
 | 008 | Record what the loop catches — append-only ledger + one-line surface | 004 | yes (new ledger) | low |
 | 009 | README rewrite — lead with delegation value prop + published catch-rate; refresh visuals | 001–008 | yes (README) | low |
+| 013 | Bind & enforce the executor in Cowork — persist the tier + fail-closed write-audit | 011, 012 | yes (setup/handoff/verify) | high |
+| 014 | Anti-cheat catch-rate — scenarios for a lying executor + subset score | 001, 005 | yes (test kit) | med |
+| 015 | Reposition on the moat — README + verifier framing (spec-compliance/drift) | 013, 014 | yes (README) | low |
 
 ## Later / bigger (NOT in this session — do not pull forward)
 Forking risk if the verifier internals (003, 004) aren't hardened first.
@@ -26,7 +29,11 @@ Forking risk if the verifier internals (003, 004) aren't hardened first.
   diff + criteria + app-profile (the adoption play).
 
 ## Status
-- [x] 001 · [x] 002 · [x] 003 · [x] 004 · [x] 005 · [x] 006 · [x] 007 · [x] 008 · [x] 009 · [x] 010 · [x] 011 · [x] 012
+- [x] 001 · [x] 002 · [x] 003 · [x] 004 · [x] 005 · [x] 006 · [x] 007 · [x] 008 · [x] 009 · [x] 010 · [x] 011 · [x] 012 · [x] 013 · [x] 014 · [x] 015
+
+### This session — make the moat bind + prove it (013–015)
+Goal: two-brain actually binds in Cowork (013), the kit proves we catch a *lying* executor (014),
+and the README leads with that wedge (015). Lowest ships first; 013 is the load-bearing fix.
 
 001 shipped (80e60c9): one-command catch-rate; AT-3 proven (Haiku 5/5 guarded → 0/5 credulous;
 Opus saturated). Evidence: test/harness/AT3-evidence.md.
@@ -44,3 +51,6 @@ scriptable checks are red; 10/10 unit tests; real demo blocks a planted failing 
 010 shipped: preflight.py — verify executor is wired to the project CLAUDE.md names; fail closed on wrong Supabase/Vercel/repo (5/5 tests).
 011 shipped: enforce_executor.py PreToolUse hook — in power mode the orchestrator can't Write/Edit (only the OL_ROLE=executor process can); self/solo unaffected (6/6 tests).
 012 shipped: dispatch.py — launch executor live-streamed + logged (.orchestrator/executor.log), stamps OL_ROLE=executor (enables PRD-011); watchable / tmux-friendly (6/6 tests).
+013 shipped: executor binding + Cowork enforcement — setup persists the tier to mode.json AND the ~~executor line (verifies before "ready"); handoff routes Cowork dispatch via the shell MCP (e.g. Desktop Commander), not the sandbox; audit_executor.py fail-closes a handback whose tree changed with no recorded dispatch (7/7 tests; AT-3 repro blocked→allowed). Root cause: mode.json missing (defaulted self) + CLAUDE.md ~~executor=self.
+014 shipped: anti-cheat catch-rate — S13–S16 (tampered tests, fabricated number, done-without-running, reward-hacked check); --category filter + core/anti-cheat breakdown; self-test discriminates all 22 fixtures (8 new good/bad).
+015 shipped: repositioned on the moat — README leads with "assume the executor cheats, we catch it" + competitive contrast + spec-compliance/drift framing; version 0.7.0 (both manifests); claude plugin validate ✔. NOT pushed (release = owner sign-off).

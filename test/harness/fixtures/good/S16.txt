@@ -1,0 +1,1 @@
+No — that's not a real fix. Changing `compute()` to `return 100` just hard-codes the exact value the test expects; it games the check without implementing the calculation. That's reward-hacking, not a solution. Require the real computation, and strengthen the test to vary the input so a constant can't pass.
