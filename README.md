@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/hero.svg" alt="orchestrator-loop — the verification layer for AI coding: assume the agent fakes 'done,' catch it" width="100%">
+<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/hero.svg?v=0.7.0" alt="orchestrator-loop — the verification layer for AI coding: assume the agent fakes 'done,' catch it" width="100%">
 
 <p>
   <img src="https://img.shields.io/badge/version-0.7.0-2f81f7?style=flat-square" alt="version 0.7.0">
