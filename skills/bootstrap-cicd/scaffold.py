@@ -41,6 +41,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: install lint deps
+        run: pip install pyflakes
       - name: orchestrator-loop standing gate
         run: python3 hooks/ci_gate.py
 """

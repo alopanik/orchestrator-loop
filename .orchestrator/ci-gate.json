@@ -1,11 +1,44 @@
 {
   "checks": [
-    {"name": "self-test",      "cmd": "python3 test/harness/run.py --self-test",      "fast": true},
-    {"name": "check-startup",  "cmd": "python3 test/harness/run.py --check-startup",  "fast": true},
-    {"name": "check-sync",     "cmd": "python3 test/harness/run.py --check-sync",     "fast": true},
-    {"name": "version-match",  "cmd": "python3 test/harness/check_version.py",        "fast": true},
-    {"name": "roadmap-status", "cmd": "python3 test/harness/roadmap_status.py --check", "fast": true},
-    {"name": "ledger",         "cmd": "python3 test/harness/check_ledger.py check",   "fast": true},
-    {"name": "units",          "cmd": "for t in test/harness/test_*.py; do echo \"== $t\"; python3 \"$t\" || exit 1; done", "fast": false}
+    {
+      "name": "self-test",
+      "cmd": "python3 test/harness/run.py --self-test",
+      "fast": true
+    },
+    {
+      "name": "check-startup",
+      "cmd": "python3 test/harness/run.py --check-startup",
+      "fast": true
+    },
+    {
+      "name": "check-sync",
+      "cmd": "python3 test/harness/run.py --check-sync",
+      "fast": true
+    },
+    {
+      "name": "version-match",
+      "cmd": "python3 test/harness/check_version.py",
+      "fast": true
+    },
+    {
+      "name": "roadmap-status",
+      "cmd": "python3 test/harness/roadmap_status.py --check",
+      "fast": true
+    },
+    {
+      "name": "ledger",
+      "cmd": "python3 test/harness/check_ledger.py check",
+      "fast": true
+    },
+    {
+      "name": "lint",
+      "cmd": "python3 -m pyflakes hooks test/harness skills",
+      "fast": true
+    },
+    {
+      "name": "units",
+      "cmd": "for t in test/harness/test_*.py; do echo \"== $t\"; python3 \"$t\" || exit 1; done",
+      "fast": false
+    }
   ]
 }
