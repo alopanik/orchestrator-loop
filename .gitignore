@@ -15,3 +15,7 @@ __pycache__/
 !.orchestrator/ci-gate.json
 !.orchestrator/ci-baseline.json
 !.orchestrator/prds/
+# per-PRD state (.json) is committed; claims are runtime fs-coordination (PRD-019) — keep them local
+.orchestrator/prds/*.claim
+.orchestrator/prds/*.released
+.orchestrator/prds/*.tmp.*

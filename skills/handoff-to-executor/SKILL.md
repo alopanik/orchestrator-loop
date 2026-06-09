@@ -21,6 +21,10 @@ The executor (`~~executor`) writes the code; you do not. The handoff is a self-c
   PRD body in the message.
 - **One PRD per handoff**, in numbered order (lowest first). Do not stack the next brief while
   one is in flight — wait for the handback first.
+- **Claim the PRD first (PRD-019)** when more than one operator/agent shares the repo:
+  `python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/prd_state.py" claim <ID> --by <you> --branch <b>`.
+  A denied claim means someone else holds it — don't double-build. The claim binds the branch
+  (`claim-check`) and a stale claim is reclaimable with `--force`.
 - **Commit policy is explicit, every time.** State whether the executor may commit + push or
   must stop for review. Default for a completed PRD with green acceptance: commit + push.
   Speculative/ad-hoc work waits for sign-off. **The executor commits and pushes — never tell
