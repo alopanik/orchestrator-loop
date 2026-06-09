@@ -12,7 +12,10 @@
   "plugins": [
     {
       "name": "orchestrator-loop",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "alopanik/orchestrator-loop"
+      },
       "description": "The verification layer for AI coding. Claude plans, hands coding to an executor, then independently QAs against reality \u2014 assuming the executor may fake \"done\" and catching it (a runnable anti-cheat catch-rate). Now unbypassable on your remote (CI) and safe across a team: atomic claims, who-decided provenance, planner\u2260verifier, owner-signoff releases, gated migrations. App-agnostic.",
       "version": "0.8.0",
       "tags": [
