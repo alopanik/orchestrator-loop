@@ -1,5 +1,13 @@
 {
   "id": "PRD-022",
-  "status": "planned",
-  "ts": "2026-06-09T00:44:57"
+  "status": "shipped",
+  "by": "Andrew Lopanik",
+  "ts": "2026-06-09T01:18:01",
+  "history": [
+    {
+      "status": "shipped",
+      "by": "Andrew Lopanik",
+      "ts": "2026-06-09T01:18:01"
+    }
+  ]
 }

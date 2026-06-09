@@ -45,6 +45,26 @@ jobs:
         run: python3 hooks/ci_gate.py
 """
 
+RELEASE_WORKFLOW = """\
+name: orchestrator-loop release gate
+# A release (a version bump that ships) requires a recorded OWNER sign-off (PRD-022).
+# Also set branch protection on your release branch to require this check + restrict who pushes.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: require owner sign-off for this release
+        run: python3 test/harness/release.py check
+"""
+
 GENERIC_TEMPLATE = """\
 #!/bin/sh
 # orchestrator-loop standing gate — portable runner for any ~~ci provider.
@@ -127,6 +147,7 @@ def cmd_install(args):
     # 2. the CI workflow — parameterized by ~~ci, NO inline check list
     if args.ci == "github":
         _write(os.path.join(repo, ".github", "workflows", "orchestrator-gate.yml"), GITHUB_WORKFLOW)
+        _write(os.path.join(repo, ".github", "workflows", "orchestrator-release.yml"), RELEASE_WORKFLOW)
     else:
         _write(os.path.join(repo, "orchestrator-gate.sh"), GENERIC_TEMPLATE, executable=True)
 

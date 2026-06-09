@@ -81,8 +81,12 @@ standalone (no plugin imports) so it can be vendored into any repo and run on a 
 | Plugin manifest | Plugin identity + version | `.claude-plugin/plugin.json` |
 | Marketplace manifest | Distribution + version | `.claude-plugin/marketplace.json` |
 | Publishing guide | How a release ships | `PUBLISHING.md` |
+| Release gate | A release (version bump) requires a recorded owner sign-off | `test/harness/release.py` + `.orchestrator/release-signoff.json` / `release-policy.json` *(PRD-022)* |
 
-**Invariant:** `version` is identical in both manifests, always.
+**Invariant:** `version` is identical in both manifests, always. A release (a version bump that
+ships) is valid only with an **owner** sign-off recorded for that exact version (`release.py
+check`, run by the scaffolded release workflow); authorized owners derive from
+`.orchestrator/release-policy.json` else the marketplace `owner.name` — never autonomous.
 
 ## Docs
 

@@ -51,6 +51,17 @@ unless the signal passes while the control fails. You cannot ratchet a number yo
 is real. Once baselined, `ci_gate.py` folds the validated signal in as a standing check, so a
 later regression in it fails CI like any other red check.
 
+## The release gate (PRD-022) — owner sign-off with multiple hands
+
+`install` also emits a **release** workflow (`orchestrator-release.yml`) that runs
+`release.py check` on a `v*` tag. A release (a version bump that ships) is valid only if an
+authorized **owner** has recorded a sign-off for that exact version
+(`release.py signoff --by <owner>`); a non-owner sign-off is refused and an unsigned bump fails
+closed. Owners come from `.orchestrator/release-policy.json` `{"owners":[…]}`, else the marketplace
+`owner.name`. To make it binding on a shared remote, set branch protection on the release branch:
+require the gate + release checks, and restrict who may push. The check is the mechanism; branch
+protection is the remote setting that enforces it for everyone.
+
 ## Install is a merge, not a clobber
 
 The `CLAUDE.md` block is delimited by `ORCHESTRATOR-LOOP:CI:BEGIN/END` sentinels and replaced in
