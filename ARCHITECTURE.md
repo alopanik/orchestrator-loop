@@ -14,6 +14,7 @@ list — no `_v2 / _new / _copy` siblings of anything below.
 | Stop gate | Fail-closed turn-end enforcement | `hooks/stop_gate.py` + `.orchestrator/gate.json` *(PRD-004)* | Claude Code `Stop` hook; loop writes the manifest |
 | Executor enforcement | Block orchestrator file-writes in power mode | `hooks/enforce_executor.py` + `.orchestrator/mode.json` *(PRD-011)* | Claude Code `PreToolUse` hook |
 | Stage skills | One skill per loop stage | `skills/<stage>/SKILL.md` (+ `references/`) | the orchestrator |
+| Migration choreography | Gate + record draft→review→apply→verify on `~~database`; block a bare destructive migration; mandatory pause at the irreversible apply | `skills/gated-migration/` + `test/harness/migrate.py` + `.orchestrator/migrations/` *(PRD-023)* | invoked on a `~~database` change |
 
 **Invariant:** rule text lives once, in `GUARDRAILS.md`. `STARTUP.md` and skills point at it;
 they never duplicate it. Connectors are referenced by `~~category` only — no product names in
