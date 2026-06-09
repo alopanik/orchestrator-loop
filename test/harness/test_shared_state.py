@@ -157,13 +157,13 @@ def test_migration_complete_and_faithful():
     def status_of(pid):
         p = os.path.join(prds_dir, f"{pid}.json")
         return json.load(open(p)).get("status") if os.path.exists(p) else None
-    # Faithful to the pre-migration truth, and stable as 018+ ship: 001-017 were shipped; the
-    # late collaborator PRDs (023) start planned. (018's own status transitions as it ships, so
-    # it is deliberately not pinned here.)
+    # Faithful to the pre-migration truth, and stable as the whole arc ships: the migration
+    # correctly marked the pre-existing 001-017 as shipped. Every Arc-2 PRD's own status
+    # transitions as it ships, so NONE of them is pinned here — pinning a transient status (e.g.
+    # "023 not-yet") is exactly what went stale once 023 shipped.
     all_17 = all(status_of(f"PRD-{i:03d}") == "shipped" for i in range(1, 18))
-    check("AT-5 001-017 shipped and 023 not-yet (faithful to pre-migration truth)",
-          all_17 and status_of("PRD-023") != "shipped",
-          f"all 001-017 shipped={all_17}  023={status_of('PRD-023')}")
+    check("AT-5 001-017 marked shipped (faithful to the pre-migration truth)",
+          all_17, f"all 001-017 shipped={all_17}")
 
 
 def test_constitution_invariant_retired():

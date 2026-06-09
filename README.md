@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/version-0.8.0-2f81f7?style=flat-square" alt="version 0.8.0">
   <img src="https://img.shields.io/badge/license-MIT-3fb950?style=flat-square" alt="MIT license">
   <img src="https://img.shields.io/badge/Claude%20Code%20%C2%B7%20Cowork-d97757?style=flat-square" alt="Claude Code and Cowork">
-  <img src="https://img.shields.io/badge/tests-149%2F149-3fb950?style=flat-square" alt="149 of 149 tests passing">
+  <img src="https://img.shields.io/badge/tests-150%2F150-3fb950?style=flat-square" alt="150 of 150 tests passing">
   <img src="https://img.shields.io/badge/self--test-22%2F22-3fb950?style=flat-square" alt="self-test discriminates 22 of 22 fixtures">
 </p>
 
@@ -279,7 +279,7 @@ orchestrator-loop/
 ├── prds/                    # PRD-NNN-*.md — the specs the loop produces (001–024)
 ├── test/
 │   ├── scenarios.json       # 16 scenarios (12 core + 4 anti-cheat) — the SSoT for the catch-rate
-│   └── harness/             # run.py · judge.py · 15 test_*.py (149 assertions) · checks: isolation · tests · executor · separation · ledger · version · preflight · release · migrate · prd_state/claim · roadmap_status
+│   └── harness/             # run.py · judge.py · 15 test_*.py (150 assertions) · checks: isolation · tests · executor · separation · ledger · version · preflight · release · migrate · prd_state/claim · roadmap_status
 │       └── AT3-evidence.md  # the recorded, reproducible proof
 ├── .orchestrator/           # runtime state + committed config: per-PRD state · ci-gate.json · ledger
 └── .claude-plugin/          # plugin.json + marketplace.json (version is the SSoT pair)
@@ -295,6 +295,6 @@ and one home — *if it isn't in the constitution, it doesn't exist*, and `archi
 
 **plan with rigor · build with leverage · verify like an adversary · ship the truth**
 
-<sub>MIT © Andrew Lopanik · 9 skills · 53 rules · 22 war stories · 16 scenarios · 149 tests · a catch-rate you can run yourself</sub>
+<sub>MIT © Andrew Lopanik · 9 skills · 53 rules · 22 war stories · 16 scenarios · 150 tests · a catch-rate you can run yourself</sub>
 
 </div>
