@@ -33,7 +33,7 @@ the framework.
 | Executor dispatch | Launch executor live-streamed + logged; stamp OL_ROLE; bound runtime (`--timeout`) + record a structured outcome | `test/harness/dispatch.py` + `.orchestrator/executor.{log,status,outcome.json}` *(PRD-012; timeout + outcome PRD-017)* | `handoff-to-executor` |
 | Executor audit | Cowork-side fail-closed detection: in power mode, block a handback whose tree changed with no recorded dispatch | `test/harness/audit_executor.py` *(PRD-013)* | `verify-handback` / the gate |
 | Executor outcome gate | Fail closed unless the last dispatch finished clean (`ok`); a stale `running` with a dead pid is a crash, not "done" | `test/harness/check_executor.py` *(PRD-017)* | `verify-handback` / the gate |
-| Decision ledger | Append-only record of gate decisions | `.orchestrator/ledger.jsonl` *(PRD-008)* | many atomic appenders — `stop_gate.py` (turn-end) + `ci_gate.py` (CI/pre-push), across operators; each a single O_APPEND write *(PRD-016/018)* |
+| Decision ledger | Append-only record of gate decisions + provenance (who · commit · branch) | `.orchestrator/ledger.jsonl` *(PRD-008/020)* | many atomic appenders — `stop_gate.py` (turn-end) + `ci_gate.py` (CI/pre-push), across operators; each a single O_APPEND write *(PRD-016/018)* |
 
 **Invariant:** one scenarios SSoT (`scenarios.json`); the `.md` is a view of it, never a second
 source. The ledger is one append-only log with **many atomic appenders** (PRD-018 retired the old

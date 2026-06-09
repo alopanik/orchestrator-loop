@@ -84,14 +84,41 @@ def run_checks(pdir, checks):
     return results
 
 
+def _provenance(pdir):
+    """Who · which commit · which branch stood behind this decision (PRD-020). Degrades to
+    'unknown' outside a git repo so provenance never crashes enforcement."""
+    actor = os.environ.get("OL_ACTOR")
+    if not actor:
+        try:
+            actor = subprocess.run(["git", "-C", pdir, "config", "user.name"],
+                                   capture_output=True, text=True).stdout.strip()
+        except Exception:
+            actor = ""
+    actor = actor or os.environ.get("USER") or "unknown"
+    commit = branch = "unknown"
+    try:
+        c = subprocess.run(["git", "-C", pdir, "rev-parse", "--short", "HEAD"],
+                           capture_output=True, text=True)
+        if c.returncode == 0 and c.stdout.strip():
+            commit = c.stdout.strip()
+        b = subprocess.run(["git", "-C", pdir, "rev-parse", "--abbrev-ref", "HEAD"],
+                           capture_output=True, text=True)
+        if b.returncode == 0 and b.stdout.strip():
+            branch = b.stdout.strip()
+    except Exception:
+        pass
+    return {"actor": actor, "commit": commit, "branch": branch}
+
+
 def append_ledger(pdir, entry):
     """Append one gate decision to the append-only ledger (PRD-008).
 
     Atomic single-write to an O_APPEND fd so concurrent writers (stop_gate at turn-end + ci_gate
     in CI/pre-push, across operators/machines) interleave as whole lines, never torn — PRD-018
-    retired the old 'one writer' assumption in favour of many atomic appenders.
+    retired the old 'one writer' assumption in favour of many atomic appenders. Each entry carries
+    provenance (who · commit · branch) so a collaborator can trust a decision they didn't watch (PRD-020).
     """
-    entry = {"ts": datetime.datetime.now().isoformat(timespec="seconds"), **entry}
+    entry = {"ts": datetime.datetime.now().isoformat(timespec="seconds"), **_provenance(pdir), **entry}
     os.makedirs(os.path.join(pdir, ".orchestrator"), exist_ok=True)
     line = (json.dumps(entry) + "\n").encode()
     fd = os.open(os.path.join(pdir, LEDGER_REL), os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
@@ -233,7 +260,8 @@ def cmd_ledger(argv):
         if dec == "BLOCK":
             blocks += 1
         fails = ",".join(c["name"] for c in checks if not c.get("ok")) or "-"
-        print(f"  {e.get('ts','?')}  {e.get('prd','?'):<10} {dec:<5} {n_ok}/{len(checks)}  {fails}")
+        prov = f"by={e.get('actor','?')}@{e.get('commit','?')}"
+        print(f"  {e.get('ts','?')}  {e.get('prd','?'):<8} {dec:<5} {n_ok}/{len(checks)}  {prov:<22} {fails}")
     print(f"\n{len(shown)} decision(s) shown — {blocks} block(s), {len(shown)-blocks} pass(es).")
     return 0
 

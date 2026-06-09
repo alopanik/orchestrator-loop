@@ -82,9 +82,36 @@ def run_checks(pdir, checks):
     return results
 
 
+def _provenance(pdir):
+    """Who · which commit · which branch stood behind this decision (PRD-020). Inlined (not
+    imported) so this engine stays standalone/vendor-able. Degrades to 'unknown' outside git."""
+    actor = os.environ.get("OL_ACTOR")
+    if not actor:
+        try:
+            actor = subprocess.run(["git", "-C", pdir, "config", "user.name"],
+                                   capture_output=True, text=True).stdout.strip()
+        except Exception:
+            actor = ""
+    actor = actor or os.environ.get("USER") or "unknown"
+    commit = branch = "unknown"
+    try:
+        c = subprocess.run(["git", "-C", pdir, "rev-parse", "--short", "HEAD"],
+                           capture_output=True, text=True)
+        if c.returncode == 0 and c.stdout.strip():
+            commit = c.stdout.strip()
+        b = subprocess.run(["git", "-C", pdir, "rev-parse", "--abbrev-ref", "HEAD"],
+                           capture_output=True, text=True)
+        if b.returncode == 0 and b.stdout.strip():
+            branch = b.stdout.strip()
+    except Exception:
+        pass
+    return {"actor": actor, "commit": commit, "branch": branch}
+
+
 def append_ledger(pdir, decision, results):
     entry = {"ts": datetime.datetime.now().isoformat(timespec="seconds"),
              "prd": "ci", "decision": decision, "source": "ci-gate",
+             **_provenance(pdir),
              "checks": [{"name": n, "ok": ok, "detail": d} for (n, ok, d) in results]}
     try:
         os.makedirs(os.path.join(pdir, ".orchestrator"), exist_ok=True)
