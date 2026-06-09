@@ -32,10 +32,29 @@ the framework.
 | Connector preflight | Verify executor is wired to the declared project; fail closed | `test/harness/preflight.py` + `.orchestrator/connectors.json` *(PRD-010)* | `handoff-to-executor` / the gate |
 | Executor dispatch | Launch executor live-streamed + logged; stamp OL_ROLE | `test/harness/dispatch.py` + `.orchestrator/executor.{log,status}` *(PRD-012)* | `handoff-to-executor` |
 | Executor audit | Cowork-side fail-closed detection: in power mode, block a handback whose tree changed with no recorded dispatch | `test/harness/audit_executor.py` *(PRD-013)* | `verify-handback` / the gate |
-| Decision ledger | Append-only record of gate decisions | `.orchestrator/ledger.jsonl` *(PRD-008)* | one writer: `hooks/stop_gate.py` (the gate) |
+| Decision ledger | Append-only record of gate decisions | `.orchestrator/ledger.jsonl` *(PRD-008)* | the gate is sole writer — `stop_gate.py` (turn-end) + `ci_gate.py` (CI/pre-push), append-only *(PRD-016; cross-writer concurrency hardened in 018)* |
 
 **Invariant:** one scenarios SSoT (`scenarios.json`); the `.md` is a view of it, never a second
-source. One writer to the ledger.
+source. The **gate** is the ledger's sole writer — two entry points since PRD-016 (`stop_gate.py`
+at turn-end, `ci_gate.py` in CI/pre-push), append-only; concurrent-writer ordering is hardened in
+018, not forked into a second ledger.
+
+## Scaffolding (bootstrap-cicd)
+
+The gate, relocated so it runs where the turn-end hook can't: on a remote and at pre-push. The
+checks live once as data; the workflow and hook are thin callers.
+
+| Component | One purpose | Home | Writers / readers |
+|---|---|---|---|
+| CI engine | Run the standing checks (fail-closed, ledgered) on a clean runner | `hooks/ci_gate.py` *(PRD-016)* | invoked by the generated workflow + pre-push hook; reads `ci-gate.json` |
+| Standing checks (SSoT) | The repo's always-on gate checks, as data | `.orchestrator/ci-gate.json` *(PRD-016)* | written by hand / `scaffold.py`; read by `ci_gate.py` |
+| Ratchet baseline | A metric floor set only if the ablation control discriminates | `.orchestrator/ci-baseline.json` *(PRD-016)* | `scaffold.py ratchet-baseline` writes; `ci_gate.py` enforces |
+| CI scaffolder | Emit the workflow + pre-push hook + managed `CLAUDE.md` block, parameterized by `~~ci`/`~~vcs` | `skills/bootstrap-cicd/scaffold.py` *(PRD-016)* | the `bootstrap-cicd` skill |
+| Version check | Assert `version` identical across both manifests | `test/harness/check_version.py` *(PRD-016)* | a standing check in `ci-gate.json` |
+
+**Invariant:** the checks live once, as data, in `.orchestrator/ci-gate.json`; the workflow and
+the pre-push hook are thin callers of `ci_gate.py` and never re-list checks. The engine is
+standalone (no plugin imports) so it can be vendored into any repo and run on a clean CI runner.
 
 ## Distribution
 

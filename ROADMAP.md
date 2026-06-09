@@ -19,17 +19,45 @@ competing on the commodity half. Lowest number ships first; the number IS the ex
 | 014 | Anti-cheat catch-rate — scenarios for a lying executor + subset score | 001, 005 | yes (test kit) | med |
 | 015 | Reposition on the moat — README + verifier framing (spec-compliance/drift) | 013, 014 | yes (README) | low |
 
+## Arc 2 — operate the loop across people, machines & time (016–023)
+
+Arc 1 won the *local, single-operator* enforcement battle: the gate, the executor lock, the
+tamper-check, the ledger — all live on one machine and fire only when that operator's agent ends
+a turn. This arc makes the same moat hold when the loop is no longer one person babysitting one
+agent: enforced on a remote nobody can bypass (CI), and safe when multiple collaborators/agents
+share the repo. Both faces of one question — *does the loop still hold across people, machines,
+and time?* Lowest number ships first.
+
+| # | scope (one line) | depends-on | user-visible? | risk |
+|---|---|---|---|---|
+| 016 | bootstrap-cicd — one command drops the EXISTING gate into any repo as `~~ci` (workflow + pre-push hook) running the same checks (no forked list), parameterized by `~~ci`/`~~vcs`; a ratchet that ships with baseline-trust discipline; install merges into `CLAUDE.md` via a managed sentinel block | — | yes (new skill) | high |
+| 017 | executor reliability — make the executor lifecycle fail-safe: reliable exit-status capture, crash / timeout / heartbeat detection, a non-clean exit fails the handback **closed** (a killed or partial run is never "done"), and an interrupted PRD is resumable, not lost. Bit on day one of single-operator use — foundational, before the collaborator thread | 012, 013 | yes (dispatch / verify) | high |
+| 018 | shared-state restructure — de-contend the loop for concurrent operators: per-PRD claim files + concurrency-safe append-only ledger (retire the "one writer" invariant); ROADMAP status becomes a generated view over the PRD/claim files | — | yes (`.orchestrator` + ROADMAP) | high |
+| 019 | PRD claiming / ownership — atomic claim so two agents don't grab the same PRD; branch ↔ claim; stale-claim reclaim | 018 | yes (go / handoff) | med |
+| 020 | team provenance ledger — extend the decision record to who · what · which-check · which-commit, so a collaborator can trust work they didn't watch | 018, 008 | yes (ledger surface) | med |
+| 021 | separation of duties — planner ≠ verifier made enforceable: fail closed if the same recorded principal planned and blessed a PRD (builds on 020's principal record; realizes the parked "Agent Teams mode" in part) | 020 | yes (verify-handback) | med |
+| 022 | multi-hand release gate — extend the CI scaffold so "push = release, owner sign-off" holds with multiple committers: required CI check + protected branch + a signoff record | 016, 019 | yes (PUBLISHING) | med |
+| 023 | gated-migration choreography — a **distinct** skill (not CI): draft SQL → owner review → apply → verify → record, with a mandatory pause at the irreversible apply; gives the existing "no bare destructive migration" rule mechanical teeth on `~~database` | 008 | yes (new skill) | med |
+
+**Spine** (per Andrew): shared-state (018) → claims (019) → provenance (020); separation-of-duties
+(021) builds on the principal record from 020. **Executor-reliability (017)** is sequenced before
+the collaborator thread because it bit on day one of single-operator use — foundational, not a
+multi-collaborator nicety. **023** is independent of the collaborator sub-thread: a smaller
+capstone that pairs with the ledger (008) for its record step.
+
 ## Later / bigger (NOT in this session — do not pull forward)
 Forking risk if the verifier internals (003, 004) aren't hardened first.
 
 - Self-improving rules: verifier catches a failure with no matching rule → auto-draft a candidate
   `Seen:` war story for human approval (never auto-commit).
 - Agent Teams mode: verifier as a standing team member auditing every handback; subagent fallback.
+  *(Partially pulled into Arc 2 — 019 makes planner ≠ verifier enforceable as the first step.)*
 - Standalone verifier: package `verify-handback` so an external planner can call it with just a
   diff + criteria + app-profile (the adoption play).
 
 ## Status
 - [x] 001 · [x] 002 · [x] 003 · [x] 004 · [x] 005 · [x] 006 · [x] 007 · [x] 008 · [x] 009 · [x] 010 · [x] 011 · [x] 012 · [x] 013 · [x] 014 · [x] 015
+- Arc 2: [ ] 016 · [ ] 017 · [ ] 018 · [ ] 019 · [ ] 020 · [ ] 021 · [ ] 022 · [ ] 023
 
 ### This session — make the moat bind + prove it (013–015)
 Goal: two-brain actually binds in Cowork (013), the kit proves we catch a *lying* executor (014),

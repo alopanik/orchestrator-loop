@@ -243,6 +243,11 @@ def main(argv):
         return cmd_check()
     if sub == "ledger":
         return cmd_ledger(argv[1:])
+    if sub == "ci":
+        # Delegate to the standing-checks engine (PRD-016). Kept as a separate, vendor-able file
+        # so it can run on a clean CI runner; this is just an ergonomic alias for local use.
+        ci = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ci_gate.py")
+        return subprocess.run([sys.executable, ci, *argv[1:]]).returncode
     print(f"unknown subcommand: {sub}", file=sys.stderr)
     return 2
 

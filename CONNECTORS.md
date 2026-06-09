@@ -13,7 +13,7 @@ tool you actually use. Wire these up once when you install, in your app-profile.
 |---|---|---|
 | Executor (coding agent) | `~~executor` | Claude Code (headless / Desktop Commander), or another coding agent |
 | Version control | `~~vcs` | GitHub, GitLab, Bitbucket |
-| CI / build gate | `~~ci` | GitHub Actions, GitLab CI, CircleCI |
+| CI / build gate | `~~ci` | GitHub Actions, GitLab CI, CircleCI — *scaffolded by `bootstrap-cicd`* (PRD-016) |
 | Database / datastore | `~~database` | Supabase, Postgres, PlanetScale, MySQL |
 | Hosting / deploy | `~~hosting` | Vercel, Netlify, Fly, Render |
 | DNS / edge | `~~dns` | Cloudflare, Route 53 |
@@ -23,7 +23,8 @@ tool you actually use. Wire these up once when you install, in your app-profile.
 Not every category is required — only wire up the ones your app uses. At minimum the loop
 needs `~~executor` (to hand work to), `~~vcs` (to commit/track), and `~~browser-qa` (to
 validate UX). `~~ci` is what makes the constitution's invariants *enforced* rather than
-aspirational (the architect-review skill leans on it). Database / hosting / DNS /
+aspirational — now delivered by the `bootstrap-cicd` skill (PRD-016), which drops the existing
+gate into the repo as `~~ci`; the architect-review skill leans on it. Database / hosting / DNS /
 project-tracker are wired as your stack needs them.
 
 ## Where you declare your mappings

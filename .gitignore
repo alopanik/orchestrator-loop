@@ -7,4 +7,10 @@ assets/*.png
 .sandbox-junk/
 __pycache__/
 *.pyc
-.orchestrator/
+# .orchestrator/ is runtime state — ignored — EXCEPT the committed config SSoT:
+# the standing CI checks + a validated ratchet baseline must ship so a clean CI runner sees them.
+# NOTE: ignore the dir *contents* (`/*`), not the dir — git can't re-include a file whose
+# parent directory is ignored, so the negations below only work with `.orchestrator/*`.
+.orchestrator/*
+!.orchestrator/ci-gate.json
+!.orchestrator/ci-baseline.json
