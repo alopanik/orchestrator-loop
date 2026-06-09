@@ -57,7 +57,18 @@ Forking risk if the verifier internals (003, 004) aren't hardened first.
 
 ## Status
 - [x] 001 · [x] 002 · [x] 003 · [x] 004 · [x] 005 · [x] 006 · [x] 007 · [x] 008 · [x] 009 · [x] 010 · [x] 011 · [x] 012 · [x] 013 · [x] 014 · [x] 015
-- Arc 2: [ ] 016 · [ ] 017 · [ ] 018 · [ ] 019 · [ ] 020 · [ ] 021 · [ ] 022 · [ ] 023
+- Arc 2: [x] 016 · [x] 017 · [ ] 018 · [ ] 019 · [ ] 020 · [ ] 021 · [ ] 022 · [ ] 023
+
+### Arc 2 — shipped notes
+016 shipped (0c90d70): bootstrap-cicd — one command relocates the existing gate to `~~ci`
+(workflow + pre-push fast gate, both calling the single engine `hooks/ci_gate.py`; no forked
+check list). Idempotent `CLAUDE.md` merge; `ratchet-baseline` REFUSES a non-discriminating signal
+(baseline-trust). 24/24 acceptance; repo passes its own new gate (dogfood green). NOT pushed.
+017 shipped: executor reliability — `dispatch.py` gains `--timeout` (kills the process group on a
+hang) + a structured `executor.outcome.json`; new `check_executor.py` fails the handback closed
+unless the last run finished `ok` (crash/kill/timeout/partial ≠ done), and a stale `running` with a
+dead pid is reported as a resumable crash. 14/14 acceptance; PRD-012 dispatch still 6/6 (no
+regression). Bit on day one of two-brain use; sequenced before the collaborator thread.
 
 ### This session — make the moat bind + prove it (013–015)
 Goal: two-brain actually binds in Cowork (013), the kit proves we catch a *lying* executor (014),

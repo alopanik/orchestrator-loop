@@ -131,6 +131,13 @@ working tree changed with no executor dispatch recorded — i.e. the orchestrato
 dispatching. This is the **Cowork-side** enforcement of the two-brain boundary (the `PreToolUse`
 hook only binds where Claude Code fires it). `self`/solo mode: dormant, always passes.
 
+**Confirm the executor finished clean (PRD-017).** Run
+`python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/check_executor.py" check`. It fails closed unless the
+last dispatch's outcome is `ok` — a crashed, killed, timed-out, or partial run is a *claim, not a
+result*, and a stale `running` with a dead pid is a crash (re-dispatch; resumable), not a finished
+job. On a real accept, consume the outcome with `dispatch.py clear-outcome` so it can't stale-block
+the next cycle. No dispatch recorded ⇒ dormant.
+
 ## Terminate in strategy
 
 End with a verdict — accept / fix-list / redesign — and the concrete next action. Never a bare

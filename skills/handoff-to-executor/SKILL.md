@@ -81,6 +81,10 @@ python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/dispatch.py" run --brief "<the brief
 ```
 
 This sets `OL_ROLE=executor`, streams stdout live, and records `.orchestrator/executor.{log,status}`.
+Pass `--timeout <seconds>` to bound a hung executor (it kills the process group on exceed). The run
+also records a structured `executor.outcome.json`; a non-clean finish — crash, kill, timeout, or a
+stale `running` after an interrupted dispatch — makes `verify-handback` fail closed (PRD-017), so a
+partial run can never be accepted as "done."
 
 **Where to run it — match your environment (PRD-013):**
 - **Claude Code (terminal):** run the helper directly; the coding CLI is on PATH and authed.

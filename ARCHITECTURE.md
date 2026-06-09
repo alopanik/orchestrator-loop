@@ -30,8 +30,9 @@ the framework.
 | Tests guard | Tests-first baseline + tamper/green check | `test/harness/check_tests.py` + `.orchestrator/tests.json` *(PRD-005)* | `baseline` writes; the gate runs `verify` |
 | Change classifier | Decide trivial-fast-path eligibility (gate still applies) | `test/harness/classify_change.py` *(PRD-007)* | `go` / `draft-prd` |
 | Connector preflight | Verify executor is wired to the declared project; fail closed | `test/harness/preflight.py` + `.orchestrator/connectors.json` *(PRD-010)* | `handoff-to-executor` / the gate |
-| Executor dispatch | Launch executor live-streamed + logged; stamp OL_ROLE | `test/harness/dispatch.py` + `.orchestrator/executor.{log,status}` *(PRD-012)* | `handoff-to-executor` |
+| Executor dispatch | Launch executor live-streamed + logged; stamp OL_ROLE; bound runtime (`--timeout`) + record a structured outcome | `test/harness/dispatch.py` + `.orchestrator/executor.{log,status,outcome.json}` *(PRD-012; timeout + outcome PRD-017)* | `handoff-to-executor` |
 | Executor audit | Cowork-side fail-closed detection: in power mode, block a handback whose tree changed with no recorded dispatch | `test/harness/audit_executor.py` *(PRD-013)* | `verify-handback` / the gate |
+| Executor outcome gate | Fail closed unless the last dispatch finished clean (`ok`); a stale `running` with a dead pid is a crash, not "done" | `test/harness/check_executor.py` *(PRD-017)* | `verify-handback` / the gate |
 | Decision ledger | Append-only record of gate decisions | `.orchestrator/ledger.jsonl` *(PRD-008)* | the gate is sole writer — `stop_gate.py` (turn-end) + `ci_gate.py` (CI/pre-push), append-only *(PRD-016; cross-writer concurrency hardened in 018)* |
 
 **Invariant:** one scenarios SSoT (`scenarios.json`); the `.md` is a view of it, never a second
