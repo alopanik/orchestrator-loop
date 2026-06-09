@@ -138,6 +138,12 @@ result*, and a stale `running` with a dead pid is a crash (re-dispatch; resumabl
 job. On a real accept, consume the outcome with `dispatch.py clear-outcome` so it can't stale-block
 the next cycle. No dispatch recorded ⇒ dormant.
 
+**Confirm planner ≠ verifier (PRD-021, opt-in).** When a team requires it
+(`OL_REQUIRE_SEPARATION=1` or `.orchestrator/policy.json` `{"require_separation": true}`), run
+`python3 "${CLAUDE_PLUGIN_ROOT}/test/harness/check_separation.py" <PRD-ID>` — it fails closed if the
+same recorded principal both built and blessed the PRD (the independence the moat sells, made an
+invariant). Solo/self mode is dormant: one principal is legitimate there.
+
 ## Terminate in strategy
 
 End with a verdict — accept / fix-list / redesign — and the concrete next action. Never a bare

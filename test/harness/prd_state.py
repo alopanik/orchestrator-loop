@@ -14,9 +14,22 @@ import argparse
 import datetime
 import json
 import os
+import subprocess
 import sys
 
 STATES = ["planned", "claimed", "building", "verifying", "shipped"]
+
+
+def _actor(d):
+    """The principal effecting a transition (PRD-020/021): $OL_ACTOR -> git user -> $USER."""
+    actor = os.environ.get("OL_ACTOR")
+    if not actor:
+        try:
+            actor = subprocess.run(["git", "-C", d, "config", "user.name"],
+                                   capture_output=True, text=True).stdout.strip()
+        except Exception:
+            actor = ""
+    return actor or os.environ.get("USER") or "unknown"
 
 
 def pdir():
@@ -43,9 +56,13 @@ def _path(d, pid):
 
 def set_state(d, pid, status):
     os.makedirs(_dir(d), exist_ok=True)
-    obj = {"id": _norm(pid), "status": status,
-           "ts": datetime.datetime.now().isoformat(timespec="seconds")}
     p = _path(d, pid)
+    by = _actor(d)
+    ts = datetime.datetime.now().isoformat(timespec="seconds")
+    prev = get_state(d, pid) or {}
+    history = list(prev.get("history", []))
+    history.append({"status": status, "by": by, "ts": ts})  # who effected each transition (PRD-021)
+    obj = {"id": _norm(pid), "status": status, "by": by, "ts": ts, "history": history}
     tmp = f"{p}.tmp.{os.getpid()}"
     with open(tmp, "w") as f:
         json.dump(obj, f, indent=2)

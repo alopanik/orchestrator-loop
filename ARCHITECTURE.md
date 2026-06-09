@@ -47,9 +47,10 @@ view. This is the substrate the claim protocol (019) and provenance (020) build 
 
 | Component | One purpose | Home | Writers / readers |
 |---|---|---|---|
-| Per-PRD state | One file per PRD = its status; atomic writes (temp + `os.replace`) | `.orchestrator/prds/<PRD-ID>.json` *(PRD-018)* | `prd_state.py` writes; `roadmap_status.py` + the claim protocol read |
+| Per-PRD state | One file per PRD = its status + principal & transition history (`by`/`history`); atomic writes | `.orchestrator/prds/<PRD-ID>.json` *(PRD-018/020/021)* | `prd_state.py` writes; `roadmap_status.py` / claim / separation read |
 | PRD claim | Atomic `O_EXCL` ownership (who + branch); lease-based stale reclaim | `.orchestrator/prds/<PRD-ID>.claim` *(PRD-019)* | `prd_state.py claim/release`; runtime-only fs coordination (gitignored) |
 | Per-PRD state CLI | set / get / list status; atomic claim / release / reclaim; branch-check | `test/harness/prd_state.py` *(PRD-018/019)* | `go` / `handoff` / `verify` |
+| Separation gate | Opt-in: fail closed if the same principal built and blessed a PRD (planner ≠ verifier) | `test/harness/check_separation.py` + `.orchestrator/policy.json` *(PRD-021)* | `verify-handback` |
 | ROADMAP status view | Generate the status block from state files; `--check` guards drift | `test/harness/roadmap_status.py` *(PRD-018)* | a standing CI check |
 | Ledger canary | Fail on any torn / unparseable ledger line | `test/harness/check_ledger.py` *(PRD-018)* | a standing CI check |
 
