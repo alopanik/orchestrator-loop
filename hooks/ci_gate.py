@@ -88,8 +88,13 @@ def append_ledger(pdir, decision, results):
              "checks": [{"name": n, "ok": ok, "detail": d} for (n, ok, d) in results]}
     try:
         os.makedirs(os.path.join(pdir, ".orchestrator"), exist_ok=True)
-        with open(os.path.join(pdir, LEDGER_REL), "a") as f:
-            f.write(json.dumps(entry) + "\n")
+        line = (json.dumps(entry) + "\n").encode()
+        # atomic append (PRD-018): one os.write to an O_APPEND fd interleaves as a whole line
+        fd = os.open(os.path.join(pdir, LEDGER_REL), os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
+        try:
+            os.write(fd, line)
+        finally:
+            os.close(fd)
     except Exception:
         pass  # never let ledger I/O mask the gate result
 

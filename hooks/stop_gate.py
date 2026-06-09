@@ -85,11 +85,20 @@ def run_checks(pdir, checks):
 
 
 def append_ledger(pdir, entry):
-    """Append one gate decision to the append-only ledger. The gate is the sole writer."""
+    """Append one gate decision to the append-only ledger (PRD-008).
+
+    Atomic single-write to an O_APPEND fd so concurrent writers (stop_gate at turn-end + ci_gate
+    in CI/pre-push, across operators/machines) interleave as whole lines, never torn — PRD-018
+    retired the old 'one writer' assumption in favour of many atomic appenders.
+    """
     entry = {"ts": datetime.datetime.now().isoformat(timespec="seconds"), **entry}
     os.makedirs(os.path.join(pdir, ".orchestrator"), exist_ok=True)
-    with open(os.path.join(pdir, LEDGER_REL), "a") as f:
-        f.write(json.dumps(entry) + "\n")
+    line = (json.dumps(entry) + "\n").encode()
+    fd = os.open(os.path.join(pdir, LEDGER_REL), os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
+    try:
+        os.write(fd, line)  # one write to O_APPEND ≤ PIPE_BUF = kernel-atomic
+    finally:
+        os.close(fd)
 
 
 def hook_mode():

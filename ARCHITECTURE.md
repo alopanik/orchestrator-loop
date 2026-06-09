@@ -33,12 +33,27 @@ the framework.
 | Executor dispatch | Launch executor live-streamed + logged; stamp OL_ROLE; bound runtime (`--timeout`) + record a structured outcome | `test/harness/dispatch.py` + `.orchestrator/executor.{log,status,outcome.json}` *(PRD-012; timeout + outcome PRD-017)* | `handoff-to-executor` |
 | Executor audit | Cowork-side fail-closed detection: in power mode, block a handback whose tree changed with no recorded dispatch | `test/harness/audit_executor.py` *(PRD-013)* | `verify-handback` / the gate |
 | Executor outcome gate | Fail closed unless the last dispatch finished clean (`ok`); a stale `running` with a dead pid is a crash, not "done" | `test/harness/check_executor.py` *(PRD-017)* | `verify-handback` / the gate |
-| Decision ledger | Append-only record of gate decisions | `.orchestrator/ledger.jsonl` *(PRD-008)* | the gate is sole writer — `stop_gate.py` (turn-end) + `ci_gate.py` (CI/pre-push), append-only *(PRD-016; cross-writer concurrency hardened in 018)* |
+| Decision ledger | Append-only record of gate decisions | `.orchestrator/ledger.jsonl` *(PRD-008)* | many atomic appenders — `stop_gate.py` (turn-end) + `ci_gate.py` (CI/pre-push), across operators; each a single O_APPEND write *(PRD-016/018)* |
 
 **Invariant:** one scenarios SSoT (`scenarios.json`); the `.md` is a view of it, never a second
-source. The **gate** is the ledger's sole writer — two entry points since PRD-016 (`stop_gate.py`
-at turn-end, `ci_gate.py` in CI/pre-push), append-only; concurrent-writer ordering is hardened in
-018, not forked into a second ledger.
+source. The ledger is one append-only log with **many atomic appenders** (PRD-018 retired the old
+"one writer" rule): each writer does a single O_APPEND write (kernel-atomic for a line ≤ PIPE_BUF),
+and `check_ledger.py` is the torn-line canary.
+
+## Shared state (collaborator-safe)
+
+Per-PRD status as its own file (no single contended document); the ROADMAP status is a generated
+view. This is the substrate the claim protocol (019) and provenance (020) build on.
+
+| Component | One purpose | Home | Writers / readers |
+|---|---|---|---|
+| Per-PRD state | One file per PRD = its status; atomic writes (temp + `os.replace`) | `.orchestrator/prds/<PRD-ID>.json` *(PRD-018)* | `prd_state.py` writes; `roadmap_status.py` + the claim protocol read |
+| Per-PRD state CLI | set / get / list a PRD's status | `test/harness/prd_state.py` *(PRD-018)* | `go` / `handoff` / `verify` |
+| ROADMAP status view | Generate the status block from state files; `--check` guards drift | `test/harness/roadmap_status.py` *(PRD-018)* | a standing CI check |
+| Ledger canary | Fail on any torn / unparseable ledger line | `test/harness/check_ledger.py` *(PRD-018)* | a standing CI check |
+
+**Invariant:** per-PRD status SSoT = one file per PRD (one owner-at-a-time); the ROADMAP status is
+a generated *view*, never hand-edited. Different PRDs never contend; same-PRD writes are atomic.
 
 ## Scaffolding (bootstrap-cicd)
 
