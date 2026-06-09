@@ -68,3 +68,13 @@ The framework enforces "extend it, don't fork it" against that file.
 
 ## Where PRDs live
 `prds/` as `PRD-NNN-short-kebab-title.md`.
+
+<!-- ORCHESTRATOR-LOOP:CI:BEGIN (managed by bootstrap-cicd — edits here are overwritten) -->
+## CI gate (orchestrator-loop)
+
+This repo's loop gate also runs as `~~ci`. The standing checks live **once**, as data, in
+`.orchestrator/ci-gate.json`; the CI workflow and the pre-push hook both invoke
+`python3 hooks/ci_gate.py` (fast subset on pre-push). Add or remove checks by editing
+`ci-gate.json` — never re-list them in the workflow (that would fork the source of truth).
+Enable the local fast gate with: `git config core.hooksPath .githooks`.
+<!-- ORCHESTRATOR-LOOP:CI:END -->

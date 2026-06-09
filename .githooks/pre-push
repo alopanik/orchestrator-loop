@@ -1,0 +1,4 @@
+#!/bin/sh
+# orchestrator-loop pre-push fast gate (PRD-016).
+# Runs the FAST subset of .orchestrator/ci-gate.json before every push; a red check refuses it.
+exec python3 hooks/ci_gate.py --fast
