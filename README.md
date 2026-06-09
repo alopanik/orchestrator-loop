@@ -1,17 +1,18 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/hero.svg?v=0.7.0" alt="orchestrator-loop — the verification layer for AI coding: assume the agent fakes 'done,' catch it" width="100%">
+<img src="https://raw.githubusercontent.com/alopanik/orchestrator-loop/master/assets/hero.svg?v=0.8.0" alt="orchestrator-loop — the verification layer for AI coding: assume the agent fakes 'done,' catch it — now unbypassable on the remote and safe across a team" width="100%">
 
 <p>
-  <img src="https://img.shields.io/badge/version-0.7.0-2f81f7?style=flat-square" alt="version 0.7.0">
+  <img src="https://img.shields.io/badge/version-0.8.0-2f81f7?style=flat-square" alt="version 0.8.0">
   <img src="https://img.shields.io/badge/license-MIT-3fb950?style=flat-square" alt="MIT license">
   <img src="https://img.shields.io/badge/Claude%20Code%20%C2%B7%20Cowork-d97757?style=flat-square" alt="Claude Code and Cowork">
-  <img src="https://img.shields.io/badge/tests-47%2F47-3fb950?style=flat-square" alt="47 of 47 tests passing">
-  <img src="https://img.shields.io/badge/plugin%20validate-passing-3fb950?style=flat-square" alt="claude plugin validate passing">
+  <img src="https://img.shields.io/badge/tests-149%2F149-3fb950?style=flat-square" alt="149 of 149 tests passing">
+  <img src="https://img.shields.io/badge/self--test-22%2F22-3fb950?style=flat-square" alt="self-test discriminates 22 of 22 fixtures">
 </p>
 
 <p>
   <a href="#why-it-exists">Why</a> &nbsp;•&nbsp;
+  <a href="#holds-across-people-machines--time">Team &amp; remote</a> &nbsp;•&nbsp;
   <a href="#the-team-in-one-command">The team</a> &nbsp;•&nbsp;
   <a href="#how-it-works">How it works</a> &nbsp;•&nbsp;
   <a href="#the-proof">The proof</a> &nbsp;•&nbsp;
@@ -27,7 +28,8 @@
 You set one goal; it plans the work, builds it, then verifies its own output like an adversary —
 reproducing every number, reading the deployed path, rejecting tampered tests and unrun results — and
 loops across as many PRDs as the goal needs, stopping only when the work is *proven* done. You delegate
-the work and review evidence, not diffs.
+the work and review evidence, not diffs. And that enforcement now holds beyond your laptop — relocated
+onto a remote nobody can bypass (CI), and safe when a whole team of people and agents shares the repo.
 
 ```text
 $ /orchestrator-loop:go   "ship per-org rate limiting, verified against the live DB"
@@ -85,6 +87,28 @@ self-test that proves each cheat is actually caught, not rubber-stamped.
 | Help the agent plan & generate | Assume the agent may lie — and **catch it** |
 | Trust the agent's "done" / its self-run tests | Re-establish every "done" against reality; tests-first, tamper-guarded |
 | Compete on number of agents / skills | Competes on **forensic verification** — spec-compliance / drift |
+| Live on one developer's machine, single-operator | Enforced on a **remote nobody can bypass** (CI) and **safe across a team** — atomic claims, who-decided provenance, planner ≠ verifier |
+
+<br/>
+
+## Holds across people, machines & time
+
+A verifier moat is only worth as much as it is *unskippable*. Arc 2 makes it hold once the loop is
+no longer one person babysitting one agent on one laptop — each row a fail-closed check you can run,
+not a guideline:
+
+| It also survives… | What enforces it | Where |
+|---|---|---|
+| **A direct push that skips the agent** | the same gate, relocated to `~~ci` — one command drops a CI workflow + pre-push hook that run the *exact same checks* (no forked list) | `bootstrap-cicd` → `hooks/ci_gate.py` |
+| **An executor that crashes / times out / returns partial** | a non-clean run fails the handback closed — a killed or unfinished run is never "done" | `test/harness/check_executor.py` |
+| **Two collaborators grabbing the same PRD** | an atomic `O_EXCL` claim — exactly one wins; stale claims reclaim on a lease | `prd_state.py claim` |
+| **Trusting work you didn't watch** | every gate decision records who · commit · branch | `.orchestrator/ledger.jsonl` |
+| **An agent blessing its own code** | planner ≠ verifier, enforced when a team opts in | `check_separation.py` |
+| **A release slipped in without sign-off** | a version bump ships only with a recorded **owner** sign-off | `release.py check` |
+| **A bare `DROP TABLE`** | the irreversible apply pauses for owner review; a bare destructive migration is blocked unless staged | `gated-migration` → `migrate.py` |
+
+Same loop, same moat — now it survives the remote, the team, and the crash, not just your good
+intentions on one machine.
 
 <br/>
 
@@ -116,8 +140,9 @@ orchestrator-loop *is* that trust scaffold.
 
 </div>
 
-The loop is `rules → roadmap → PRD → handoff → verify`, driven from one goal by `/go`. Six
-enforcement mechanisms are what make it more than a checklist:
+The loop is `rules → roadmap → PRD → handoff → verify`, driven from one goal by `/go`. Six core
+enforcement mechanisms make the local loop more than a checklist (the remote-and-team gates are in
+[Holds across people, machines & time](#holds-across-people-machines--time) above):
 
 | Mechanism | What it guarantees | File |
 |---|---|---|
@@ -247,14 +272,16 @@ orchestrator-loop/
 ├── CLAUDE.md                # this repo's own app-profile (the plugin dogfoods itself)
 ├── hooks/
 │   ├── hooks.json           # SessionStart → STARTUP.md · Stop → fail-closed gate · PreToolUse → executor guard
-│   ├── stop_gate.py         # the fail-closed gate + the decision ledger
+│   ├── stop_gate.py         # the fail-closed turn-end gate + the decision ledger (+ provenance)
+│   ├── ci_gate.py           # the same gate, relocated — runs the standing checks in CI / pre-push
 │   └── enforce_executor.py  # in power mode, the orchestrator can't write code
-├── skills/                  # 7 skills — setup · go · roadmap · draft-prd · architect-review · handoff · verify
-├── prds/                    # PRD-NNN-*.md — the specs the loop produces
+├── skills/                  # 9 skills — setup · go · roadmap · draft-prd · architect-review · handoff · verify · bootstrap-cicd · gated-migration
+├── prds/                    # PRD-NNN-*.md — the specs the loop produces (001–024)
 ├── test/
-│   ├── scenarios.json       # 12 scenarios — the SSoT for the catch-rate
-│   └── harness/             # run.py · judge.py · check_isolation · check_tests · classify_change · preflight · dispatch
+│   ├── scenarios.json       # 16 scenarios (12 core + 4 anti-cheat) — the SSoT for the catch-rate
+│   └── harness/             # run.py · judge.py · 15 test_*.py (149 assertions) · checks: isolation · tests · executor · separation · ledger · version · preflight · release · migrate · prd_state/claim · roadmap_status
 │       └── AT3-evidence.md  # the recorded, reproducible proof
+├── .orchestrator/           # runtime state + committed config: per-PRD state · ci-gate.json · ledger
 └── .claude-plugin/          # plugin.json + marketplace.json (version is the SSoT pair)
 ```
 
@@ -268,6 +295,6 @@ and one home — *if it isn't in the constitution, it doesn't exist*, and `archi
 
 **plan with rigor · build with leverage · verify like an adversary · ship the truth**
 
-<sub>MIT © Andrew Lopanik · 7 skills · 53 rules · 22 war stories · 16 scenarios · a catch-rate you can run yourself</sub>
+<sub>MIT © Andrew Lopanik · 9 skills · 53 rules · 22 war stories · 16 scenarios · 149 tests · a catch-rate you can run yourself</sub>
 
 </div>

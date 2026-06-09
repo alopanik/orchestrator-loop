@@ -1,7 +1,7 @@
 {
   "name": "orchestrator-loop",
-  "version": "0.7.0",
-  "description": "The verification layer for AI coding. Claude plans the work, hands the coding to an executor, then independently QAs the result against reality — assuming the executor may fake \"done\" (tests edited green, fabricated numbers, unrun suites) and catching it with a runnable anti-cheat catch-rate. Enforces engineering guardrails and a skeptical, evidence-first mindset. App-agnostic: bring your own project profile and tools.",
+  "version": "0.8.0",
+  "description": "The verification layer for AI coding. Claude plans the work, hands the coding to an executor, then independently QAs the result against reality — assuming the executor may fake \"done\" (tests edited green, fabricated numbers, unrun suites) and catching it with a runnable anti-cheat catch-rate. The same enforcement now runs unbypassably on your remote (CI) and stays safe across a team — atomic PRD claims, who-decided provenance, planner≠verifier, owner-signoff releases, and gated migrations. Enforces engineering guardrails and a skeptical, evidence-first mindset. App-agnostic: bring your own project profile and tools.",
   "author": {
     "name": "Andrew Lopanik"
   },

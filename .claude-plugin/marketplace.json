@@ -7,7 +7,7 @@
   },
   "metadata": {
     "description": "Distribution marketplace for the orchestrator-loop plugin.",
-    "version": "0.7.0"
+    "version": "0.8.0"
   },
   "plugins": [
     {
@@ -16,8 +16,8 @@
         "source": "github",
         "repo": "alopanik/orchestrator-loop"
       },
-      "description": "The verification layer for AI coding. Claude plans, hands coding to an executor, then independently QAs against reality — assuming the executor may fake \"done\" and catching it (a runnable anti-cheat catch-rate). Enforces guardrails and an evidence-first mindset. App-agnostic.",
-      "version": "0.7.0",
+      "description": "The verification layer for AI coding. Claude plans, hands coding to an executor, then independently QAs against reality — assuming the executor may fake \"done\" and catching it (a runnable anti-cheat catch-rate). Now unbypassable on your remote (CI) and safe across a team: atomic claims, who-decided provenance, planner≠verifier, owner-signoff releases, gated migrations. App-agnostic.",
+      "version": "0.8.0",
       "tags": [
         "verification",
         "orchestration",

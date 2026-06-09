@@ -16,7 +16,7 @@
   <rect x="0.5" y="0.5" width="899" height="219" rx="19.5" fill="none" stroke="#21262d" stroke-width="1"/>
 
   <!-- text block -->
-  <text class="mono" x="56" y="58" font-size="13" letter-spacing="2.4" fill="#6e7681">CLAUDE PLUGIN · COWORK &amp; CODE · v0.7.0</text>
+  <text class="mono" x="56" y="58" font-size="13" letter-spacing="2.4" fill="#6e7681">CLAUDE PLUGIN · COWORK &amp; CODE · v0.8.0</text>
   <text class="mono" x="53" y="119" font-size="48" font-weight="700" fill="#e6edf3">orchestrator<tspan fill="#58a6ff">-loop</tspan></text>
   <rect x="56" y="136" width="76" height="5" rx="2.5" fill="#f78166"/>
   <rect x="138" y="136" width="44" height="5" rx="2.5" fill="#58a6ff"/>
