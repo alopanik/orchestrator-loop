@@ -34,7 +34,10 @@ def check(name, cond, detail=""):
 
 
 def run(cmd, cwd=None):
-    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    env = dict(os.environ)
+    if cwd:
+        env["CLAUDE_PROJECT_DIR"] = cwd  # pin to the temp repo (robust to an ambient CLAUDE_PROJECT_DIR)
+    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, env=env)
 
 
 def make_target():
@@ -61,7 +64,7 @@ def test_install_idempotent_and_artifacts():
     check("install exits 0", r1.returncode == 0, r1.stderr)
     claude = open(os.path.join(d, "CLAUDE.md")).read()
     after1 = claude
-    r2 = run([PY, SCAFFOLD, "install", "--ci", "github", "--vcs", "git", "--repo", d])
+    run([PY, SCAFFOLD, "install", "--ci", "github", "--vcs", "git", "--repo", d])
     after2 = open(os.path.join(d, "CLAUDE.md")).read()
     # AT-3
     check("AT-3 CLAUDE.md block byte-identical on re-run", after1 == after2)

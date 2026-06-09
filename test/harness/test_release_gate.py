@@ -6,7 +6,6 @@ Run: python3 test/harness/test_release_gate.py
 """
 import json
 import os
-import re
 import subprocess
 import sys
 import tempfile

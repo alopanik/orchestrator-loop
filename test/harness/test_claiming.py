@@ -10,7 +10,6 @@ import subprocess
 import sys
 import tempfile
 import threading
-import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PRD_STATE = os.path.join(HERE, "prd_state.py")
